@@ -241,7 +241,7 @@ graph TB
 
 ### 🐛 Segnalare Bug
 
-Usa il [sistema di issue](https://github.com/tuousername/mangadb/issues) per segnalare bug o richiedere nuove funzionalità.
+Usa il [sistema di issue](https://github.com/DuPont9029/mangadb/issues) per segnalare bug o richiedere nuove funzionalità.
 
 ---
 
@@ -279,9 +279,9 @@ SOFTWARE.
 
 **Made with ❤️ by [Il tuo nome]**
 
-[![GitHub stars](https://img.shields.io/github/stars/tuousername/mangadb?style=social)](https://github.com/tuousername/mangadb/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/tuousername/mangadb?style=social)](https://github.com/tuousername/mangadb/network)
-[![GitHub issues](https://img.shields.io/github/issues/tuousername/mangadb)](https://github.com/tuousername/mangadb/issues)
+[![GitHub stars](https://img.shields.io/github/stars/DuPont9029/mangadb?style=social)](https://github.com/DuPont9029/mangadb/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/DuPont9029/mangadb?style=social)](https://github.com/DuPont9029/mangadb/network)
+[![GitHub issues](https://img.shields.io/github/issues/DuPont9029/mangadb)](https://github.com/DuPont9029/mangadb/issues)
 
 </div>
 
