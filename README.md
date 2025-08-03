@@ -277,7 +277,7 @@ SOFTWARE.
 
 ### 🌟 Se ti piace MangaDB, lascia una stella! ⭐
 
-**Made with ❤️ by [Il tuo nome]**
+**Made with ❤️ by DuPont9029**
 
 [![GitHub stars](https://img.shields.io/github/stars/DuPont9029/mangadb?style=social)](https://github.com/DuPont9029/mangadb/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/DuPont9029/mangadb?style=social)](https://github.com/DuPont9029/mangadb/network)
