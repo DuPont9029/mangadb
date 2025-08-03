@@ -287,5 +287,5 @@ SOFTWARE.
 
 ---
 
-*🚀 Porta la tua collezione manga nello spazio con MangaDB! 🌌*
+*🚀 Porta la tua collezione manga nello spazio con MangaDB!! 🌌*
         
