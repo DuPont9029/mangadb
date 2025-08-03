@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Login - MangaDB</title>
+    <link href="./style/bootstrap1.css" rel="stylesheet">
+    <link href="./style/fontawesome1.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .login-header h1 {
+            color: #0ea5e9;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .login-header p {
+            color: #64748b;
+            margin: 0;
+        }
+        
+        .form-control-modern {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        
+        .form-control-modern:focus {
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+            background: white;
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(14, 165, 233, 0.3);
+        }
+        
+        .alert-modern {
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            background: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .input-group-text {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-right: none;
+            border-radius: 12px 0 0 12px;
+        }
+        
+        .input-group .form-control-modern {
+            border-left: none;
+            border-radius: 0 12px 12px 0;
+        }
+        
+        .loading {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1><i class="fas fa-book"></i> MangaDB</h1>
+            <p>Accedi con le tue credenziali S3</p>
+        </div>
+        
+        <div id="error-alert" class="alert-modern" style="display: none;">
+            <i class="fas fa-exclamation-circle"></i> <span id="error-message"></span>
+        </div>
+        
+        <form id="login-form">
+            <div class="mb-3">
+                <label for="access_key" class="form-label">Access Key ID</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-key"></i></span>
+                    <input type="text" class="form-control form-control-modern" id="access_key" name="access_key" required>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="secret_key" class="form-label">Secret Access Key</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    <input type="password" class="form-control form-control-modern" id="secret_key" name="secret_key" required>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="endpoint" class="form-label">S3 Endpoint</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-server"></i></span>
+                    <input type="text" class="form-control form-control-modern" id="endpoint" name="endpoint" value="s3.cubbit.eu" required>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="region" class="form-label">Region</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                    <select class="form-control form-control-modern" id="region" name="region">
+                        <option value="eu-central-1" selected>EU Central (Frankfurt)</option>
+                        <option value="us-east-1">US East (N. Virginia)</option>
+                        <option value="us-west-2">US West (Oregon)</option>
+                        <option value="eu-west-1">Europe (Ireland)</option>
+                        <option value="ap-southeast-1">Asia Pacific (Singapore)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Aggiungi questo campo dopo il campo region e prima del pulsante submit -->
+            <div class="mb-4">
+                <label for="db_filename" class="form-label">Nome File Database</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-database"></i></span>
+                    <input type="text" class="form-control form-control-modern" id="db_filename" name="db_filename" value="mangadb.parquet" required>
+                </div>
+                <div class="form-text">Il nome del file del database su S3 (es: mangadb.parquet, mia-collezione.parquet)</div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-login">
+                <span class="normal-text">
+                    <i class="fas fa-sign-in-alt"></i> Accedi a MangaDB
+                </span>
+                <span class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Connessione...
+                </span>
+            </button>
+        </form>
+        
+        <div class="text-center mt-3">
+            <small class="text-muted">
+                <i class="fas fa-shield-alt"></i> Le tue credenziali sono sicure e vengono utilizzate solo per accedere ai tuoi dati S3
+            </small>
+        </div>
+    </div>
+
+    <script src="./scripts/aws-sdk.min.js"></script>
+    <script src="./scripts/auth.js"></script>
+</body>
+</html>
