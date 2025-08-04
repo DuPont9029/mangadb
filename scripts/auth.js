@@ -95,7 +95,7 @@ class AuthManager {
 const authManager = new AuthManager();
 
 // Funzioni per il login
-if (window.location.pathname.includes('index.html') || window.location.pathname === '/') {
+if (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname === '/mangadb/') {
     document.getElementById('login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         
