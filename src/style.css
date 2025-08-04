@@ -189,12 +189,6 @@ body {
   background: var(--bg-secondary);
 }
 
-.manga-cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .cover-placeholder {
   width: 100%;
   height: 100%;
@@ -219,17 +213,6 @@ body {
   color: var(--text-primary);
 }
 
-.manga-info .author {
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-  margin-bottom: var(--spacing-xs);
-}
-
-.manga-info .chapters {
-  font-size: var(--font-size-sm);
-  color: var(--text-muted);
-}
-
 .status {
   display: inline-block;
   padding: 0.125rem 0.375rem;
@@ -248,11 +231,6 @@ body {
 .status-completed {
   background-color: rgba(23, 162, 184, 0.1);
   color: var(--info-color);
-}
-
-.status-hiatus {
-  background-color: rgba(255, 193, 7, 0.1);
-  color: #856404;
 }
 
 .content {
@@ -410,8 +388,7 @@ body {
 }
 
 .form-group input,
-.form-group select,
-.form-group textarea {
+.form-group select {
   width: 100%;
   padding: var(--spacing-sm) var(--spacing-md);
   border: 1px solid var(--border-color);
@@ -421,8 +398,7 @@ body {
 }
 
 .form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+.form-group select:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 0.125rem rgba(100, 108, 255, 0.25);
@@ -445,27 +421,6 @@ body {
 }
 
 /* Progress */
-.progress-bar {
-  width: 100%;
-  height: 8px;
-  background-color: var(--bg-secondary);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  margin-bottom: var(--spacing-sm);
-}
-
-.progress-fill {
-  height: 100%;
-  background-color: var(--primary-color);
-  transition: width 0.3s ease;
-  width: 0%;
-}
-
-.progress-text {
-  text-align: center;
-  font-size: var(--font-size-sm);
-  color: var(--text-secondary);
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -570,12 +525,6 @@ body {
   border-color: rgba(220, 53, 69, 0.2);
 }
 
-.alert-success {
-  background-color: rgba(40, 167, 69, 0.1);
-  color: #155724;
-  border-color: rgba(40, 167, 69, 0.2);
-}
-
 /* Loading states */
 .loading {
   display: flex;
@@ -594,30 +543,6 @@ body {
 /* Utility classes */
 .hidden {
   display: none !important;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-muted {
-  color: var(--text-muted);
-}
-
-.mb-0 {
-  margin-bottom: 0;
-}
-.mb-1 {
-  margin-bottom: var(--spacing-xs);
-}
-.mb-2 {
-  margin-bottom: var(--spacing-sm);
-}
-.mb-3 {
-  margin-bottom: var(--spacing-md);
-}
-.mb-4 {
-  margin-bottom: var(--spacing-lg);
 }
 
 /* Login Screen Styles */

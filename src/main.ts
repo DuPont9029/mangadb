@@ -5,20 +5,19 @@
  */
 
 import "./style.css";
-import { MangaService } from "./services/index.js";
+// Remove static import of MangaService for dynamic loading
 import { AuthService } from "./services/auth.js";
 import { LoginComponent } from "./components/login.js";
-import * as duckdb from "@duckdb/duckdb-wasm";
+// Dynamically import duckdb-wasm only when needed
 
 class MangaApp {
-  private mangaService: MangaService;
+  private mangaService: any;
   private authService: AuthService;
   private loginComponent: LoginComponent;
   private allManga: any[] = [];
   private currentFilter = "all";
 
   constructor() {
-    this.mangaService = new MangaService();
     this.authService = new AuthService();
     this.loginComponent = new LoginComponent();
     this.init();
@@ -26,13 +25,18 @@ class MangaApp {
 
   private async init(): Promise<void> {
     try {
-      window.duckdb = duckdb; // Make DuckDB globally accessible
-
       // Check if user is authenticated
       if (!this.authService.isAuthenticated()) {
         this.showLoginScreen();
         return;
       }
+
+      // Dynamically import duckdb-wasm and MangaService only after login
+      if (!window.duckdb) {
+        window.duckdb = await import("@duckdb/duckdb-wasm");
+      }
+      const { MangaService } = await import("./services/index.js");
+      this.mangaService = new MangaService();
 
       await this.mangaService.initialize();
       this.setupUI();
