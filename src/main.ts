@@ -8,6 +8,7 @@ import "./style.css";
 import { MangaService } from "./services/index.js";
 import { AuthService } from "./services/auth.js";
 import { LoginComponent } from "./components/login.js";
+import * as duckdb from "@duckdb/duckdb-wasm";
 
 class MangaApp {
   private mangaService: MangaService;
@@ -25,6 +26,8 @@ class MangaApp {
 
   private async init(): Promise<void> {
     try {
+      window.duckdb = duckdb; // Make DuckDB globally accessible
+
       // Check if user is authenticated
       if (!this.authService.isAuthenticated()) {
         this.showLoginScreen();
