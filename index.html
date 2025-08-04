@@ -574,8 +574,8 @@
     <!-- Correggi l'inclusione di DuckDB -->
 
     <script type="module">
-        import * as duckdb from 'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.28.0/+esm';
-        
+       // import * as duckdb from 'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.28.0/+esm';
+        import * as duckdb from './scripts/duckdb-bundle.js'
         window.duckdb = duckdb;
     </script>
 
