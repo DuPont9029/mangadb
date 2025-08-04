@@ -73,7 +73,7 @@ class AuthManager {
         localStorage.removeItem('aws_credentials');
         this.credentials = null;
         this.s3 = null;
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
     }
 
     // Ottieni il client S3
@@ -95,7 +95,7 @@ class AuthManager {
 const authManager = new AuthManager();
 
 // Funzioni per il login
-if (window.location.pathname.includes('login.html')) {
+if (window.location.pathname.includes('index.html') || window.location.pathname === '/') {
     document.getElementById('login-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -123,7 +123,7 @@ if (window.location.pathname.includes('login.html')) {
             await authManager.testConnection();
             
             // Redirect alla pagina principale
-            window.location.href = 'index.html';
+            window.location.href = 'mangadb.html';
             
         } catch (error) {
             errorMessage.textContent = error.message;
@@ -138,10 +138,10 @@ if (window.location.pathname.includes('login.html')) {
 }
 
 // Funzioni per la pagina principale
-if (window.location.pathname.includes('index.html') || window.location.pathname === '/') {
+if (window.location.pathname.includes('mangadb.html')) {
     // Verifica autenticazione al caricamento
     if (!authManager.loadCredentials()) {
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
     }
 }
 
