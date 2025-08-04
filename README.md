@@ -1,291 +1,197 @@
+# 📚 Manga Database
 
+A modern, local manga management application built with TypeScript, Vite, DuckDB, and AWS S3. Features a clean architecture and modern UI for organizing your manga collection.
 
+## ✨ Features
 
-          
-# 🚀 MangaDB - Gestione Manga Spaziale ✨
-
-<div align="center">
-
-![MangaDB Logo](https://img.shields.io/badge/📚-MangaDB-blue?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkgyMFYxOEg0VjZaIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+)
-
-**🌟 La tua collezione manga sempre organizzata nel cloud! 🌟**
-
-[![DuckDB](https://img.shields.io/badge/DuckDB-WASM-orange?style=flat-square&logo=duckdb)](https://duckdb.org/)
-[![AWS S3](https://img.shields.io/badge/AWS-S3-yellow?style=flat-square&logo=amazon-aws)](https://aws.amazon.com/s3/)
-[![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-purple?style=flat-square&logo=bootstrap)](https://getbootstrap.com/)
-[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-green?style=flat-square&logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-
-</div>
-
----
-
-## 🎯 Cos'è MangaDB?
-
-**MangaDB** è un'applicazione web moderna e potente per gestire la tua collezione di manga direttamente nel browser! Utilizza tecnologie all'avanguardia come **DuckDB WASM** per il database locale e **AWS S3** per il backup cloud.
-
-### ✨ Caratteristiche Spaziali
-
-🔥 **Database In-Memory Ultra Veloce**
-- Powered by DuckDB WASM
-- Query SQL lightning-fast
-- Zero configurazione server
-
-☁️ **Backup Cloud Automatico**
-- Sincronizzazione con AWS S3
-- Backup incrementali
-- Accesso da qualsiasi dispositivo
-
-🎨 **UI Moderna e Responsive**
-- Design glassmorphism
-- Animazioni fluide
-- Mobile-first approach
-
-🔒 **Sicurezza Enterprise**
-- Autenticazione AWS IAM
-- Policy granulari per bucket
-- Crittografia end-to-end
-
----
+- **Local Database**: Uses DuckDB for fast, local data storage
+- **Cloud Storage**: AWS S3 integration for manga file storage
+- **Modern UI**: Clean, responsive interface built with vanilla TypeScript
+- **File Support**: Supports images, PDF, CBZ, and CBR files
+- **Search & Filter**: Find manga by title, author, or genre
+- **Chapter Management**: Upload and organize manga chapters
+- **Real-time Progress**: Upload progress tracking
+- **Clean Architecture**: Modular, maintainable codebase
 
 ## 🚀 Quick Start
 
-### 📋 Prerequisiti
+### Prerequisites
 
-- Browser moderno (Chrome, Firefox, Safari, Edge)
-- Credenziali AWS S3 (Access Key + Secret Key)
-- Bucket S3 configurato
+- Node.js 18+
+- npm or yarn
+- AWS account (optional, for cloud storage)
 
-### ⚡ Installazione Istantanea
+### Installation
 
-1. **Clone del repository**
+1. **Clone and setup**
+
    ```bash
-   git clone https://github.com/tuousername/mangadb.git
+   git clone <your-repo>
    cd mangadb
+   npm install
    ```
 
-2. **Avvia il server locale**
+2. **Configure environment**
+
    ```bash
-   # Con Python
-   python -m http.server 8000
-   
-   # Con Node.js
-   npx serve .
-   
-   # Con PHP
-   php -S localhost:8000
+   cp .env.example .env.local
+   # Edit .env.local with your AWS credentials (optional)
    ```
 
-3. **Apri nel browser**
-   ```
-   http://localhost:8000
-   ```
+3. **Start development server**
 
-4. **Configura AWS S3**
-   - Inserisci le tue credenziali AWS
-   - Specifica il nome del bucket
-   - Scegli il nome del file database
-
----
-
-## 🛠️ Architettura Tecnologica
-
-```mermaid
-graph TB
-    A[🌐 Browser] --> B[📱 MangaDB UI]
-    B --> C[🦆 DuckDB WASM]
-    B --> D[☁️ AWS S3]
-    C --> E[📊 Parquet Files]
-    D --> F[🔄 Backup System]
-    
-    style A fill:#e1f5fe
-    style B fill:#f3e5f5
-    style C fill:#fff3e0
-    style D fill:#e8f5e8
-```
-
-### 🧩 Stack Tecnologico
-
-| Componente | Tecnologia | Descrizione |
-|------------|------------|-------------|
-| 🎨 **Frontend** | HTML5 + CSS3 + JavaScript ES6+ | UI moderna e responsive |
-| 🗄️ **Database** | DuckDB WASM | Database analitico in-memory |
-| ☁️ **Storage** | AWS S3 | Backup e sincronizzazione cloud |
-| 📊 **Formato Dati** | Apache Parquet | Compressione ottimale |
-| 🎭 **UI Framework** | Bootstrap 5.3 | Design system moderno |
-| 🔧 **Build Tools** | Vanilla JS | Zero dependencies |
-
----
-
-## 🎮 Funzionalità Principali
-
-### 📚 Gestione Manga
-- ➕ **Aggiungi manga** con nome e link
-- ✏️ **Modifica** informazioni esistenti
-- 🗑️ **Elimina** manga dalla collezione
-- 🔍 **Ricerca** avanzata per nome
-- 📊 **Statistiche** dettagliate
-
-### 🏷️ Sistema di Stato
-- 📖 **Letti** - Manga completati
-- ⏰ **Non Letti** - Da leggere
-- 🔄 **Toggle rapido** dello stato
-
-### ☁️ Backup e Sincronizzazione
-- 💾 **Salvataggio automatico** su S3
-- 🔄 **Backup manuale** con nome personalizzato
-- 📥 **Caricamento** da backup esistenti
-- 🗜️ **Ricompattazione** database
-
-### 🎨 Interfaccia Utente
-- 🌙 **Design glassmorphism** moderno
-- 📱 **Responsive** su tutti i dispositivi
-- ⚡ **Animazioni** fluide
-- 🎯 **UX ottimizzata**
-
----
-
-## 🔧 Configurazione AWS S3
-
-### 🔐 Policy IAM Raccomandata
-
-```json
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:GetObject",
-                "s3:PutObject",
-                "s3:DeleteObject",
-                "s3:ListBucket"
-            ],
-            "Resource": [
-                "arn:aws:s3:::your-bucket-name",
-                "arn:aws:s3:::your-bucket-name/*"
-            ]
-        }
-    ]
-}
-```
-
-### 🛡️ Sicurezza Best Practices
-
-- ✅ Usa credenziali IAM dedicate
-- ✅ Limita l'accesso al singolo bucket
-- ✅ Abilita la crittografia S3
-- ✅ Monitora gli accessi con CloudTrail
-- ✅ Usa policy con principio del minimo privilegio
-
----
-
-## 📁 Struttura del Progetto
-
-```
-📦 mangadb/
-├── 🏠 index.html              # Homepage principale
-├── 🔐 login.html              # Pagina di autenticazione
-├── 📜 delete.min.js           # DuckDB WASM bundle
-├── 📂 scripts/
-│   ├── 🎮 app.js              # Logica applicazione
-│   ├── 🗄️ manga-manager.js    # Gestione database
-│   ├── 🔑 auth.js             # Autenticazione AWS
-│   ├── ☁️ aws-sdk.min.js      # AWS SDK
-│   ├── 🎨 bootstrap1.min.js   # Bootstrap JS
-│   └── 🏹 arrow.min.js        # Apache Arrow
-├── 🎨 style/
-│   ├── 🎭 bootstrap1.css      # Bootstrap CSS
-│   ├── 🎯 fontawesome1.css    # Font Awesome
-│   └── 📝 webfonts/           # Font files
-└── 📋 README.md               # Questo file
-```
-
----
-
-## 🎯 Roadmap Futura
-
-### 🚀 Versione 2.0
-- [ ] 🏷️ **Tag personalizzati** per manga
-- [ ] 📊 **Dashboard analytics** avanzata
-- [ ] 🔄 **Sincronizzazione real-time**
-- [ ] 📱 **PWA support** per mobile
-- [ ] 🌙 **Dark mode** nativo
-
-### 🌟 Versione 3.0
-- [ ] 👥 **Condivisione collezioni**
-- [ ] 🤖 **AI recommendations**
-- [ ] 📚 **Import da MyAnimeList**
-- [ ] 🔔 **Notifiche push**
-- [ ] 🌐 **Multi-lingua**
-
----
-
-## 🤝 Contribuire
-
-### 🎯 Come Contribuire
-
-1. **Fork** il repository
-2. **Crea** un branch per la tua feature
    ```bash
-   git checkout -b feature/amazing-feature
+   npm run dev
    ```
-3. **Commit** le tue modifiche
-   ```bash
-   git commit -m '✨ Add amazing feature'
-   ```
-4. **Push** al branch
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-5. **Apri** una Pull Request
 
-### 🐛 Segnalare Bug
+4. **Open your browser**
+   Navigate to `http://localhost:5173`
 
-Usa il [sistema di issue](https://github.com/tuousername/mangadb/issues) per segnalare bug o richiedere nuove funzionalità.
-
----
-
-## 📄 Licenza
+## 🏗️ Project Structure
 
 ```
-MIT License
-
-Copyright (c) 2024 MangaDB
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+src/
+├── components/         # UI components (future expansion)
+├── config/            # Application configuration
+├── services/          # Business logic and data services
+│   ├── database.ts    # DuckDB database operations
+│   ├── s3.ts         # AWS S3 file operations
+│   └── index.ts      # Main application service
+├── types/            # TypeScript type definitions
+├── utils/            # Utility functions
+├── main.ts          # Application entry point
+└── style.css        # Application styles
 ```
 
+## 🛠️ Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run type-check` - Run TypeScript type checking
+- `npm run lint` - Run ESLint (when configured)
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env.local` file with:
+
+```env
+# Database
+DB_PATH=./data/manga.db
+DB_MAX_CONNECTIONS=10
+
+# AWS S3 (optional)
+S3_BUCKET_NAME=your-manga-bucket
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+
+# Upload settings
+UPLOAD_PATH=./uploads
+MAX_FILE_SIZE=104857600  # 100MB
+```
+
+### Supported File Types
+
+- **Images**: .jpg, .jpeg, .png, .webp
+- **Archives**: .pdf, .cbz, .cbr
+
+## 🗃️ Database Schema
+
+The application uses DuckDB with the following schema:
+
+- **manga**: Main manga information
+- **chapters**: Chapter data with file references
+- **users**: User preferences (future feature)
+
+## 🔄 Development Workflow
+
+1. **Add new manga** - Upload cover and metadata
+2. **Add chapters** - Upload chapter files with progress tracking
+3. **Browse library** - Search and filter your collection
+4. **Read manga** - View chapters (coming soon)
+
+## 🚀 Deployment
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+The built files will be in the `dist/` directory.
+
+### Local Production Preview
+
+```bash
+npm run preview
+```
+
+## 🧰 Architecture
+
+### Clean Architecture Principles
+
+- **Separation of Concerns**: Services, types, and utilities are separated
+- **Dependency Injection**: Services can be easily mocked and tested
+- **Type Safety**: Full TypeScript coverage
+- **Modular Design**: Easy to extend and maintain
+
+### Key Services
+
+- **DatabaseService**: Handles all database operations
+- **S3Service**: Manages file upload/download operations
+- **MangaService**: Coordinates between database and storage
+
+## 🔐 Security
+
+- Environment variables for sensitive data
+- File type validation
+- File size limits
+- Input sanitization
+
+## 🚧 Future Enhancements
+
+- [ ] Manga reader interface
+- [ ] User authentication
+- [ ] Reading progress tracking
+- [ ] Tags and collections
+- [ ] Import/export functionality
+- [ ] Dark mode theme
+- [ ] Mobile app
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Database connection errors**
+
+   - Check `DB_PATH` in `.env.local`
+   - Ensure write permissions to data directory
+
+2. **File upload failures**
+
+   - Verify AWS credentials
+   - Check file size limits
+   - Confirm supported file types
+
+3. **Build errors**
+   - Run `npm install` to ensure dependencies
+   - Check TypeScript errors with `npm run type-check`
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
 ---
 
-<div align="center">
-
-### 🌟 Se ti piace MangaDB, lascia una stella! ⭐
-
-**Made with ❤️ by [Il tuo nome]**
-
-[![GitHub stars](https://img.shields.io/github/stars/tuousername/mangadb?style=social)](https://github.com/tuousername/mangadb/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/tuousername/mangadb?style=social)](https://github.com/tuousername/mangadb/network)
-[![GitHub issues](https://img.shields.io/github/issues/tuousername/mangadb)](https://github.com/tuousername/mangadb/issues)
-
-</div>
-
----
-
-*🚀 Porta la tua collezione manga nello spazio con MangaDB!! 🌌*
-        
+Built with ❤️ using modern web technologies for manga enthusiasts.
