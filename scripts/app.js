@@ -182,7 +182,7 @@ function editManga(id) {
     document.getElementById('manga-name').value = manga.nome;
     document.getElementById('manga-link').value = manga.link;
     document.getElementById('manga-started').checked = manga.started;
-    document.getElementById('manga-chapters').value = manga.chapter_read || 0;
+    document.getElementById('manga-chapters').value = Math.round((manga.chapter_read || 0) * 10) / 10;
     
     new bootstrap.Modal(document.getElementById('mangaModal')).show();
 }
