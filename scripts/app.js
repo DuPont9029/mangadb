@@ -74,6 +74,7 @@ function displayManga(manga) {
     grid.innerHTML = manga.map(m => {
         const safeLink = m.link.replace(/'/g, "\\'");
         const safeName = escapeHtml(m.nome);
+        const chaptersRead = Math.round((m.chapter_read || 0) * 10) / 10;
         
         return `
         <div class="manga-card">
@@ -82,6 +83,10 @@ function displayManga(manga) {
             <a href="${escapeHtml(m.link)}" target="_blank" class="manga-link">
                 <i class="fas fa-external-link-alt"></i> Vai al manga
             </a>
+            <div class="manga-date">
+                <i class="fas fa-book-reader"></i>
+                Capitoli letti: <strong>${chaptersRead}</strong>
+            </div>
             <div class="manga-date">
                 <i class="fas fa-clock"></i>
                 Aggiornato: ${formatDate(m.last_updated)}
@@ -167,14 +172,6 @@ document.getElementById('search-input').addEventListener('input', (e) => {
     filterAndDisplayManga();
 });
 
-// Mostra modal per aggiungere manga
-function showAddModal() {
-    document.getElementById('modalTitle').textContent = 'Aggiungi Manga';
-    document.getElementById('manga-form').reset();
-    document.getElementById('manga-id').value = '';
-    new bootstrap.Modal(document.getElementById('mangaModal')).show();
-}
-
 // Modifica manga
 function editManga(id) {
     const manga = allManga.find(m => m.id === id);
@@ -185,6 +182,7 @@ function editManga(id) {
     document.getElementById('manga-name').value = manga.nome;
     document.getElementById('manga-link').value = manga.link;
     document.getElementById('manga-started').checked = manga.started;
+    document.getElementById('manga-chapters').value = manga.chapter_read || 0;
     
     new bootstrap.Modal(document.getElementById('mangaModal')).show();
 }
@@ -195,6 +193,7 @@ async function saveManga() {
     const nome = document.getElementById('manga-name').value.trim();
     const link = document.getElementById('manga-link').value.trim();
     const started = document.getElementById('manga-started').checked;
+    const chapterRead = parseFloat(document.getElementById('manga-chapters').value) || 0.0;
     
     if (!nome || !link) {
         showError('Nome e link sono obbligatori');
@@ -204,11 +203,11 @@ async function saveManga() {
     try {
         if (id) {
             // Modifica
-            await mangaManager.updateManga(parseInt(id), nome, link, started);
+            await mangaManager.updateManga(parseInt(id), nome, link, started, chapterRead);
             showMessage('Manga aggiornato con successo!');
         } else {
             // Aggiungi
-            await mangaManager.addManga(nome, link, started);
+            await mangaManager.addManga(nome, link, started, chapterRead);
             showMessage('Manga aggiunto con successo!');
         }
         
@@ -219,6 +218,15 @@ async function saveManga() {
     } catch (error) {
         showError('Errore nel salvataggio: ' + error.message);
     }
+}
+
+// Mostra modal per aggiungere manga
+function showAddModal() {
+    document.getElementById('modalTitle').textContent = 'Aggiungi Manga';
+    document.getElementById('manga-form').reset();
+    document.getElementById('manga-id').value = '';
+    document.getElementById('manga-chapters').value = '0.0'; // Default a 0.0
+    new bootstrap.Modal(document.getElementById('mangaModal')).show();
 }
 
 // Cambia stato di lettura

@@ -63,11 +63,9 @@ class MangaManager {
     async createTable() {
         const conn = await this.db.connect();
         try {
-
             await conn.query(`
                 CREATE SEQUENCE IF NOT EXISTS manga_id_seq START 1
             `);
-
             
             await conn.query(`
                 CREATE TABLE IF NOT EXISTS manga (
@@ -75,11 +73,19 @@ class MangaManager {
                     nome VARCHAR NOT NULL,
                     link VARCHAR NOT NULL UNIQUE,
                     started BOOLEAN DEFAULT FALSE,
+                    chapter_read REAL DEFAULT 0.0,
                     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             `);
             
-            // Crea una sequenza per l'auto-incremento se non esiste
+            // Rimuovi questo blocco che causa l'errore:
+            // try {
+            //     await conn.query(`
+            //         ALTER TABLE manga ADD COLUMN chapter_read INTEGER DEFAULT 0
+            //     `);
+            // } catch (error) {
+            //     // La colonna esiste già, ignora l'errore
+            // }
             
         } finally {
             await conn.close();
@@ -121,11 +127,12 @@ class MangaManager {
                 if (validRowCount > 0) {
                     // Inserisci i dati gestendo correttamente i NULL
                     await conn.query(`
-                        INSERT INTO manga (nome, link, started, last_updated)
+                        INSERT INTO manga (nome, link, started, chapter_read, last_updated)
                         SELECT 
                             TRIM(nome) as nome,
                             TRIM(link) as link,
                             COALESCE(started, false) as started,
+                            COALESCE(chapter_read, 0.0) as chapter_read,
                             COALESCE(last_updated, CURRENT_TIMESTAMP) as last_updated
                         FROM read_parquet('${this.fileName}')
                         WHERE nome IS NOT NULL AND nome != '' AND TRIM(nome) != ''
@@ -193,7 +200,6 @@ class MangaManager {
                     await this.db.registerFileBuffer(this.fileName, parquetData);
                     
                     // Inserisci solo i dati validi, ignorando l'ID dal file
-                    // Nel metodo handleSchemaConflict(), sostituisci la query di inserimento con questa:
                     await conn.query(`
                         INSERT INTO manga (nome, link, started, last_updated)
                         SELECT 
@@ -259,7 +265,7 @@ class MangaManager {
         }
     }
 
-    async addManga(nome, link, started = false) {
+    async addManga(nome, link, started = false, chapterRead = 0) {
         const conn = await this.db.connect();
         try {
             // Escape delle virgolette singole per sicurezza SQL
@@ -267,8 +273,8 @@ class MangaManager {
             const escapedLink = link.replace(/'/g, "''");
             
             await conn.query(`
-                INSERT INTO manga (nome, link, started)
-                VALUES ('${escapedNome}', '${escapedLink}', ${started})
+                INSERT INTO manga (nome, link, started, chapter_read)
+                VALUES ('${escapedNome}', '${escapedLink}', ${started}, ${chapterRead})
             `);
             
             // Salva automaticamente su S3 dopo l'aggiunta
@@ -332,18 +338,19 @@ class MangaManager {
         }
     }
 
-    async updateManga(id, nome, link, started, lastUpdated = null) {
+    async updateManga(id, nome, link, started, chapterRead = 0, lastUpdated = null) {
         const conn = await this.db.connect();
         try {
             const updateTime = lastUpdated || new Date().toISOString();
             // Escape delle virgolette singole per sicurezza SQL
             const escapedNome = nome.replace(/'/g, "''");
             
-            // Aggiorna solo nome e timestamp, non il link
+            // Aggiorna tutti i campi incluso chapter_read
             await conn.query(`
                 UPDATE manga 
                 SET nome = '${escapedNome}', 
                     started = ${started}, 
+                    chapter_read = ${chapterRead},
                     last_updated = '${updateTime}'
                 WHERE id = ${id}
             `);
