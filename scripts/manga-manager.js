@@ -464,7 +464,7 @@ class MangaManager {
                  // Esporta i dati in formato Parquet per il backup
                  await conn.query(`
                      COPY (SELECT * FROM manga ORDER BY id) 
-                     TO '${backupFileName}' (FORMAT PARQUET)
+                     TO '${backupFileName}' (FORMAT PARQUET, OVERWRITE TRUE)
                  `);
              } finally {
                  await conn.close();
