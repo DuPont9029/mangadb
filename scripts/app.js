@@ -76,9 +76,18 @@ function displayManga(manga) {
         const safeName = escapeHtml(m.nome);
         const chaptersRead = Math.round((m.chapter_read || 0) * 10) / 10;
         
+        // Controlla se il manga ha aggiornamenti
+        const hasUpdates = typeof mangaHasUpdates !== 'undefined' && mangaHasUpdates(m.link);
+        let statusClass = '';
+        if (hasUpdates) {
+            statusClass = 'has-updates';
+        } else if (!m.started) {
+            statusClass = 'unread';
+        }
+        
         return `
         <div class="manga-card">
-            <div class="manga-status ${m.started ? '' : 'unread'}"></div>
+            <div class="manga-status ${statusClass}"></div>
             <div class="manga-title">${safeName}</div>
             <a href="${escapeHtml(m.link)}" target="_blank" class="manga-link">
                 <i class="fas fa-external-link-alt"></i> Vai al manga

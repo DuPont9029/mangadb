@@ -210,6 +210,23 @@
             background: var(--warning-color);
         }
         
+        .manga-status.has-updates {
+            background: #ff4444;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+            }
+        }
+        
         .manga-title {
             font-weight: 600;
             font-size: 1.1rem;
@@ -501,6 +518,15 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Pulsante Aggiornamenti -->
+                <div class="filter-group">
+                    <div class="filter-pills">
+                        <button class="filter-pill" onclick="checkMangaUpdates()" style="background: var(--success-color); color: white; border: none;">
+                            <i class="fas fa-sync-alt"></i> Controlla Aggiornamenti
+                        </button>
+                    </div>
+                </div>
             </div>
             
             <div class="content-section">
@@ -609,6 +635,7 @@
     <script src="./scripts/arrow.min.js"></script>
     <script src="./scripts/auth.js"></script>
     <script src="./scripts/manga-manager.js"></script>
+    <script src="./scripts/updates.js"></script>
     <script src="./scripts/app.js"></script>
 </body>
 </html>
