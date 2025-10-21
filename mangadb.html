@@ -405,6 +405,42 @@
             color: #991b1b;
             border-left: 4px solid var(--danger-color);
         }
+
+        /* UI scansione: log + progress bar */
+        .scan-progress-wrap {
+            margin-bottom: 1rem;
+        }
+        .scan-logs {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            max-height: 110px;
+            overflow-y: auto;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 0.75rem;
+        }
+        .scan-log-item { margin-bottom: 0.25rem; }
+        .scan-log-item a { color: var(--primary-color); text-decoration: none; }
+        .scan-progress { margin: 0.25rem 0 1rem; }
+        .scan-progress-bar-bg {
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .scan-progress-bar-fill {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .scan-progress-text {
+            margin-top: 0.25rem;
+            font-size: 0.8rem;
+            color: #64748b;
+            text-align: right;
+        }
         
         .modal-modern .modal-content {
             border: none;
@@ -466,6 +502,17 @@
         <div class="content">
             <div id="message-alert" class="alert-modern alert-success-modern" style="display: none;">
                 <i class="fas fa-check-circle"></i> <span id="message-text"></span>
+            </div>
+
+            <!-- UI Scansione: Log + Progress Bar -->
+            <div id="scan-ui" class="scan-progress-wrap" style="display: none;">
+                <div id="scan-logs" class="scan-logs"></div>
+                <div class="scan-progress">
+                    <div class="scan-progress-bar-bg">
+                        <div id="scan-progress-bar" class="scan-progress-bar-fill" style="width: 0%"></div>
+                    </div>
+                    <div id="scan-progress-text" class="scan-progress-text">0% (0/0)</div>
+                </div>
             </div>
             
             <div id="error-alert" class="alert-modern alert-danger-modern" style="display: none;">
@@ -634,7 +681,10 @@
 
     <script src="./scripts/arrow.min.js"></script>
     <script src="./scripts/auth.js"></script>
-    <script src="./scripts/manga-manager.js"></script>
+    <script src="./scripts/manga-manager.js?v=linkfix2"></script>
+    <script src="./scripts/update-router.js"></script>
+    <script src="./scripts/providers/mangabuddy.js"></script>
+    <script src="./scripts/providers/manhwabuddy.js"></script>
     <script src="./scripts/updates.js"></script>
     <script src="./scripts/app.js"></script>
 </body>

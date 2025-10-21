@@ -3,6 +3,10 @@ class MangaUpdater {
     constructor() {
         this.updatesInProgress = false;
         this.mangaWithUpdates = new Set();
+        // Stato progress
+        this.totalToProcess = 0;
+        this.processedCount = 0;
+
     }
 
     // Funzione principale per controllare tutti gli aggiornamenti
@@ -18,29 +22,38 @@ class MangaUpdater {
             
             // Ottieni tutti i manga dal database
             const allManga = await mangaManager.getAllManga();
-            const mangaBuddyManga = allManga.filter(manga => 
-                manga.link && manga.link.includes('mangabuddy.com')
-            );
+            const targetManga = allManga.filter(manga => {
+                if (!manga.link) return false;
+                try {
+                    return !!(window.UpdateRouter && window.UpdateRouter.getProviderForUrl(manga.link));
+                } catch (e) {
+                    return false;
+                }
+            });
 
-            if (mangaBuddyManga.length === 0) {
-                showMessage('Nessun manga di MangaBuddy trovato', 'info');
+            if (targetManga.length === 0) {
+                showMessage('Nessun manga aggiornabile trovato per i provider registrati', 'info');
                 return;
             }
 
-            showMessage(`Controllo ${mangaBuddyManga.length} manga...`, 'info');
+            showMessage(`Controllo ${targetManga.length} manga...`, 'info');
             
-            // Reset dei manga con aggiornamenti
+            // Reset dei manga con aggiornamenti e progress UI
             this.mangaWithUpdates.clear();
+            this.totalToProcess = targetManga.length;
+            this.processedCount = 0;
+            this.initScanUI(this.totalToProcess);
+            this.clearScanLogs();
             
             // Controlla ogni manga (con limite per evitare sovraccarico)
             const batchSize = 5; // Controlla 5 manga alla volta
-            for (let i = 0; i < mangaBuddyManga.length; i += batchSize) {
-                const batch = mangaBuddyManga.slice(i, i + batchSize);
+            for (let i = 0; i < targetManga.length; i += batchSize) {
+                const batch = targetManga.slice(i, i + batchSize);
                 const promises = batch.map(manga => this.checkSingleMangaUpdate(manga));
                 await Promise.allSettled(promises);
                 
                 // Piccola pausa tra i batch per non sovraccaricare il server
-                if (i + batchSize < mangaBuddyManga.length) {
+                if (i + batchSize < targetManga.length) {
                     await this.delay(1000);
                 }
             }
@@ -54,6 +67,9 @@ class MangaUpdater {
             } else {
                 showMessage('Nessun nuovo capitolo trovato', 'info');
             }
+            
+            // Completa progress a fine scansione
+            this.completeProgress();
 
         } catch (error) {
             console.error('Errore nel controllo aggiornamenti:', error);
@@ -65,10 +81,26 @@ class MangaUpdater {
 
     // Controlla un singolo manga
     async checkSingleMangaUpdate(manga) {
+        let provider = null;
         try {
-            const availableChapters = await this.getAvailableChapters(manga.link);
+            let availableChapters;
+            const router = window.UpdateRouter;
+            provider = router ? router.getProviderForUrl(manga.link) : null;
+            console.log(`[Update] Controllo: ${manga.nome} (${manga.link}) via ${provider ? provider.name : 'nessun provider'}`);
+            if (provider) {
+                availableChapters = await provider.getAvailableChapters(manga.link);
+            } else {
+                console.warn(`Nessun provider registrato per ${manga.nome} (${manga.link}). Skipping.`);
+                return; // Non usare alcun fallback
+            }
+
             // Arrotonda i capitoli letti per evitare problemi di precisione float
             const readChapters = Math.round((manga.chapter_read || 0) * 10) / 10;
+            
+            // Logga sempre il link scansionato e i capitoli trovati
+            this.appendScanLog(manga.link, availableChapters);
+            this.incrementProgress();
+            console.log(`[Update] Capitoli disponibili trovati: ${availableChapters} per ${manga.nome}`);
             
             if (availableChapters > readChapters) {
                 this.mangaWithUpdates.add(manga.link);
@@ -76,86 +108,14 @@ class MangaUpdater {
             }
             
         } catch (error) {
-            console.warn(`Errore nel controllo di ${manga.nome}:`, error.message);
+            // Logga l'errore per il singolo manga e avanza il progress
+            this.appendScanLog(manga.link, 'errore');
+            this.incrementProgress();
+            console.error(`[Update] Errore nel controllo di ${manga.nome} (${manga.link}) via ${provider ? provider.name : 'nessun provider'}:`, error);
         }
     }
 
-    // Estrae il numero di capitoli disponibili dalla pagina MangaBuddy
-    async getAvailableChapters(mangaUrl) {
-        try {
-            // Fetch diretto senza proxy
-            const response = await fetch(mangaUrl);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const htmlContent = await response.text();
-            
-            // Crea un parser DOM temporaneo
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlContent, 'text/html');
-            
-            // Cerca il tag con classe "latest-chapters"
-            const latestChaptersElement = doc.querySelector('.latest-chapters');
-            if (!latestChaptersElement) {
-                throw new Error('Elemento latest-chapters non trovato');
-            }
-            
-            // Cerca il testo "Chapter" seguito da un numero
-            const chapterText = latestChaptersElement.textContent;
-            const chapterMatch = chapterText.match(/Chapter\s+(\d+(?:\.\d+)?)/i);
-            
-            if (!chapterMatch) {
-                throw new Error('Numero capitolo non trovato nel testo: ' + chapterText);
-            }
-            
-            return parseFloat(chapterMatch[1]);
-            
-        } catch (error) {
-            // Fallback: prova a usare un approccio alternativo
-            return await this.getAvailableChaptersAlternative(mangaUrl);
-        }
-    }
 
-    // Metodo alternativo per ottenere i capitoli
-    async getAvailableChaptersAlternative(mangaUrl) {
-        try {
-            // Fetch diretto senza proxy alternativo
-            const response = await fetch(mangaUrl);
-            
-            if (!response.ok) {
-                throw new Error(`Impossibile accedere a ${mangaUrl}`);
-            }
-            
-            const htmlContent = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(htmlContent, 'text/html');
-            
-            // Cerca in diversi possibili selettori
-            const selectors = [
-                '.latest-chapters',
-                '.chapter-list .chapter-item:first-child',
-                '.manga-chapters .chapter:first-child',
-                '[class*="chapter"]:first-child'
-            ];
-            
-            for (const selector of selectors) {
-                const element = doc.querySelector(selector);
-                if (element) {
-                    const chapterMatch = element.textContent.match(/Chapter\s+(\d+(?:\.\d+)?)/i);
-                    if (chapterMatch) {
-                        return parseFloat(chapterMatch[1]);
-                    }
-                }
-            }
-            
-            throw new Error('Numero capitolo non trovato con nessun metodo');
-            
-        } catch (error) {
-            console.warn(`Fallback fallito per ${mangaUrl}:`, error.message);
-            throw error;
-        }
-    }
 
     // Controlla se un manga ha aggiornamenti
     hasUpdates(mangaLink) {
@@ -170,6 +130,69 @@ class MangaUpdater {
     // Pulisce la cache degli aggiornamenti
     clearUpdatesCache() {
         this.mangaWithUpdates.clear();
+    }
+
+    // ===== UI Progress Helpers =====
+    initScanUI(total) {
+        this.totalToProcess = total || 0;
+        this.processedCount = 0;
+        const wrap = document.getElementById('scan-ui');
+        const bar = document.getElementById('scan-progress-bar');
+        const text = document.getElementById('scan-progress-text');
+        const logs = document.getElementById('scan-logs');
+        if (wrap && bar && text && logs) {
+            wrap.style.display = total > 0 ? 'block' : 'none';
+            bar.style.width = '0%';
+            text.textContent = `0% (0/${total})`;
+            logs.innerHTML = '';
+        }
+    }
+
+    setProgress(current, total) {
+        const bar = document.getElementById('scan-progress-bar');
+        const text = document.getElementById('scan-progress-text');
+        if (!bar || !text) return;
+        const safeTotal = total || this.totalToProcess || 0;
+        const safeCurrent = Math.min(current || 0, safeTotal);
+        const percent = safeTotal > 0 ? Math.round((safeCurrent / safeTotal) * 100) : 0;
+        bar.style.width = `${percent}%`;
+        text.textContent = `${percent}% (${safeCurrent}/${safeTotal})`;
+    }
+
+    incrementProgress() {
+        this.processedCount = Math.min(this.processedCount + 1, this.totalToProcess);
+        this.setProgress(this.processedCount, this.totalToProcess);
+    }
+
+    appendScanLog(link, chapters) {
+        const logs = document.getElementById('scan-logs');
+        if (!logs) return;
+        const safeLink = typeof link === 'string' ? link : '';
+        let chaptersText;
+        if (chapters === 'errore') {
+            chaptersText = 'errore';
+        } else if (typeof chapters === 'number') {
+            chaptersText = `capitoli trovati: ${chapters}`;
+        } else {
+            chaptersText = `${chapters}`;
+        }
+        const item = document.createElement('div');
+        item.className = 'scan-log-item';
+        item.innerHTML = `<a href="${safeLink}" target="_blank">${safeLink}</a> — ${chaptersText}`;
+        logs.appendChild(item);
+    }
+
+    clearScanLogs() {
+        const logs = document.getElementById('scan-logs');
+        if (logs) logs.innerHTML = '';
+    }
+
+    completeProgress() {
+        this.setProgress(this.totalToProcess, this.totalToProcess);
+        const wrap = document.getElementById('scan-ui');
+        if (wrap && this.totalToProcess === 0) {
+            wrap.style.display = 'none';
+        }
     }
 }
 
