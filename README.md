@@ -2,7 +2,7 @@
 
 
           
-# 🚀 MangaDB - Gestione Manga Spaziale ✨
+# 🚀 MangaDB ✨
 
 <div align="center">
 
@@ -91,12 +91,12 @@
 
 ```mermaid
 graph TB
-    A[🌐 Browser] --> B[📱 MangaDB UI]
-    B --> C[🦆 DuckDB WASM]
-    B --> D[☁️ AWS S3]
-    C --> E[📊 Parquet Files]
-    D --> F[🔄 Backup System]
-    
+    A["🌐 Browser"] --> B["📱 MangaDB UI"]
+    B --> C["🦆 DuckDB WASM"]
+    C --> E["📊 Parquet Files"]
+    E --> D["☁️ AWS S3"]
+    F["🔄 Backup System"] --> D
+
     style A fill:#e1f5fe
     style B fill:#f3e5f5
     style C fill:#fff3e0
@@ -150,22 +150,45 @@ graph TB
 
 ```json
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:GetObject",
-                "s3:PutObject",
-                "s3:DeleteObject",
-                "s3:ListBucket"
-            ],
-            "Resource": [
-                "arn:aws:s3:::your-bucket-name",
-                "arn:aws:s3:::your-bucket-name/*"
-            ]
-        }
-    ]
+  "syntax_version": "itworks",
+  "statement": [
+    {
+      "effect": "allow",
+      "action": [
+        "s3:DeleteObject"
+      ],
+      "resource": [
+        "crn:object:objectname/*"
+      ]
+    },
+    {
+      "effect": "allow",
+      "action": [
+        "s3:GetObject"
+      ],
+      "resource": [
+        "crn:object:objectname/*"
+      ]
+    },
+    {
+      "effect": "allow",
+      "action": [
+        "s3:PutObject"
+      ],
+      "resource": [
+        "crn:object:objectname/*"
+      ]
+    },
+    {
+      "effect": "allow",
+      "action": [
+        "s3:ListBucket"
+      ],
+      "resource": [
+        "crn:object:objectname"
+      ]
+    }
+  ]
 }
 ```
 
@@ -205,16 +228,16 @@ graph TB
 ## 🎯 Roadmap Futura
 
 ### 🚀 Versione 2.0
+- [X] 🔎 **Cerca updates** avanzato
+- [X] 📱 **PWA support** per mobile
 - [ ] 🏷️ **Tag personalizzati** per manga
-- [ ] 📊 **Dashboard analytics** avanzata
-- [ ] 🔄 **Sincronizzazione real-time**
-- [ ] 📱 **PWA support** per mobile
 - [ ] 🌙 **Dark mode** nativo
+
 
 ### 🌟 Versione 3.0
 - [ ] 👥 **Condivisione collezioni**
 - [ ] 🤖 **AI recommendations**
-- [ ] 📚 **Import da MyAnimeList**
+- [ ] 📚 **Accesso con google**
 - [ ] 🔔 **Notifiche push**
 - [ ] 🌐 **Multi-lingua**
 
