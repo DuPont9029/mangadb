@@ -2,13 +2,13 @@
 
 
           
-# 🚀 MangaDB ✨
+#  MangaDB 
 
 <div align="center">
 
 ![MangaDB Logo](https://img.shields.io/badge/📚-MangaDB-blue?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTQgNkgyMFYxOEg0VjZaIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+)
 
-**🌟 La tua collezione manga sempre organizzata nel cloud! 🌟**
+**collezione manga sempre organizzata nel cloud! **
 
 [![DuckDB](https://img.shields.io/badge/DuckDB-WASM-orange?style=flat-square&logo=duckdb)](https://duckdb.org/)
 [![AWS S3](https://img.shields.io/badge/AWS-S3-yellow?style=flat-square&logo=amazon-aws)](https://aws.amazon.com/s3/)
@@ -19,11 +19,11 @@
 
 ---
 
-## 🎯 Cos'è MangaDB?
+##  Cos'è MangaDB?
 
 **MangaDB** è un'applicazione web moderna e potente per gestire la tua collezione di manga direttamente nel browser! Utilizza tecnologie all'avanguardia come **DuckDB WASM** per il database locale e **AWS S3** per il backup cloud.
 
-### ✨ Caratteristiche Spaziali
+###  Caratteristiche Spaziali
 
 🔥 **Database In-Memory Ultra Veloce**
 - Powered by DuckDB WASM
