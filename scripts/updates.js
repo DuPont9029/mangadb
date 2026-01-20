@@ -23,7 +23,8 @@ class MangaUpdater {
             // Ottieni tutti i manga dal database
             const allManga = await mangaManager.getAllManga();
             const targetManga = allManga.filter(manga => {
-                if (!manga.link) return false;
+                // Scansiona solo i manga in lettura
+                if (!manga.link || manga.status !== 'reading') return false;
                 try {
                     return !!(window.UpdateRouter && window.UpdateRouter.getProviderForUrl(manga.link));
                 } catch (e) {

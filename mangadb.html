@@ -1,655 +1,798 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>📚 MangaDB - Gestione Moderna</title>
     <!--
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     -->
-    
-    <link href="./style/bootstrap1.css" rel="stylesheet">
-    <link href="./style/fontawesome1.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="./img/image.png">
-    
+
+    <link href="./style/bootstrap1.css" rel="stylesheet" />
+    <link href="./style/fontawesome1.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="./img/image.png" />
+
     <style>
-        :root {
-            --primary-color: #0ea5e9;
-            --secondary-color: #0284c7;
-            --success-color: #10b981;
-            --danger-color: #ef4444;
-            --warning-color: #f59e0b;
-            --dark-bg: #1f2937;
-            --dark-card: #374151;
-            --text-light: #f9fafb;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-            min-height: 100vh;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        
-        .main-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            margin: 20px;
-            padding: 0;
-            overflow: hidden;
-        }
-        
+      :root {
+        --primary-color: #0ea5e9;
+        --secondary-color: #0284c7;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --dark-bg: #1f2937;
+        --dark-card: #374151;
+        --text-light: #f9fafb;
+      }
+
+      body {
+        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        min-height: 100vh;
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+      }
+
+      .main-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        margin: 20px;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        position: relative;
+      }
+
+      .header h1 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 2.5rem;
+      }
+
+      .header .subtitle {
+        opacity: 0.9;
+        margin-top: 0.5rem;
+      }
+
+      .logout-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+      }
+
+      .logout-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      /* Media queries per responsive design */
+      @media (max-width: 768px) {
         .header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 2rem;
-            text-align: center;
-            position: relative;
+          padding: 1rem;
+          text-align: left;
         }
-        
+
         .header h1 {
-            margin: 0;
-            font-weight: 700;
-            font-size: 2.5rem;
+          font-size: 1.8rem;
+          margin-bottom: 0.5rem;
         }
-        
-        .header .subtitle {
-            opacity: 0.9;
-            margin-top: 0.5rem;
-        }
-        
+
         .logout-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            transition: all 0.3s ease;
+          position: static !important;
+          display: inline-block;
+          margin: 0.25rem;
+          padding: 0.4rem 0.8rem;
+          font-size: 0.8rem;
         }
-        
-        .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
+
+        .header .subtitle {
+          margin-bottom: 1rem;
         }
-        
-        /* Media queries per responsive design */
-        @media (max-width: 768px) {
-            .header {
-                padding: 1rem;
-                text-align: left;
-            }
-            
-            .header h1 {
-                font-size: 1.8rem;
-                margin-bottom: 0.5rem;
-            }
-            
-            .logout-btn {
-                position: static !important;
-                display: inline-block;
-                margin: 0.25rem;
-                padding: 0.4rem 0.8rem;
-                font-size: 0.8rem;
-            }
-            
-            .header .subtitle {
-                margin-bottom: 1rem;
-            }
+      }
+
+      @media (max-width: 480px) {
+        .header {
+          padding: 0.75rem;
         }
-        
-        @media (max-width: 480px) {
-            .header {
-                padding: 0.75rem;
-            }
-            
-            .header h1 {
-                font-size: 1.5rem;
-            }
-            
-            .logout-btn {
-                padding: 0.3rem 0.6rem;
-                font-size: 0.75rem;
-                margin: 0.2rem;
-            }
+
+        .header h1 {
+          font-size: 1.5rem;
         }
-        
-        .filter-section {
-            padding: 1.5rem;
-            background: #f8fafc;
-            border-bottom: 1px solid #e2e8f0;
+
+        .logout-btn {
+          padding: 0.3rem 0.6rem;
+          font-size: 0.75rem;
+          margin: 0.2rem;
         }
-        
-        .filter-group {
-            margin-bottom: 1rem;
+      }
+
+      .filter-section {
+        padding: 1.5rem;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .filter-group {
+        margin-bottom: 1rem;
+      }
+
+      .filter-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .filter-pills {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .filter-pill {
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        border: 2px solid transparent;
+        font-size: 0.9rem;
+        cursor: pointer;
+      }
+
+      .filter-pill.active {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+      }
+
+      .filter-pill:not(.active) {
+        background: white;
+        color: #64748b;
+        border-color: #e2e8f0;
+      }
+
+      .filter-pill:not(.active):hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+        transform: translateY(-1px);
+      }
+
+      .content-section {
+        padding: 2rem;
+      }
+
+      .manga-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      .manga-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .manga-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary-color);
+      }
+
+      .manga-status {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--success-color);
+      }
+
+      .manga-status.unread {
+        background: var(--warning-color);
+      }
+
+      .manga-status.planning {
+        background: var(--primary-color);
+      }
+
+      .manga-status.dropped {
+        background: var(--danger-color);
+      }
+
+      .manga-status.has-updates {
+        background: #ff4444;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
         }
-        
-        .filter-group:last-child {
-            margin-bottom: 0;
+        70% {
+          box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
         }
-        
-        .filter-pills {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            justify-content: center;
+        100% {
+          box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
         }
-        
-        .filter-pill {
-            padding: 0.5rem 1.5rem;
-            border-radius: 50px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            border: 2px solid transparent;
-            font-size: 0.9rem;
-            cursor: pointer;
+      }
+
+      .manga-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        color: #1f2937;
+      }
+
+      .manga-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .manga-link:hover {
+        color: var(--secondary-color);
+      }
+
+      .manga-date {
+        color: #64748b;
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .manga-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .btn-modern {
+        padding: 0.4rem 0.8rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .btn-success-modern {
+        background: var(--success-color);
+        color: white;
+      }
+
+      .btn-primary-modern {
+        background: var(--primary-color);
+        color: white;
+      }
+
+      .btn-danger-modern {
+        background: var(--danger-color);
+        color: white;
+      }
+
+      .btn-modern:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .stats-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+      }
+
+      .stat-label {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+      }
+
+      .floating-add {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        border-radius: 50%;
+        box-shadow: 0 8px 16px rgba(14, 165, 233, 0.3);
+        transition: all 0.3s ease;
+        z-index: 1000;
+      }
+
+      .floating-add:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(14, 165, 233, 0.4);
+      }
+
+      .search-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .search-input-group {
+        display: flex;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(14, 165, 233, 0.15);
+        border: 2px solid #e2e8f0;
+        transition: all 0.3s ease;
+        width: 100%;
+      }
+
+      .search-input-group:focus-within {
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+      }
+
+      .search-input {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: none;
+        outline: none;
+        font-size: 0.95rem;
+        background: transparent;
+        color: #374151;
+      }
+
+      .search-btn {
+        padding: 0.75rem 1.25rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .alert-modern {
+        border: none;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .alert-success-modern {
+        background: rgba(16, 185, 129, 0.1);
+        color: #065f46;
+        border-left: 4px solid var(--success-color);
+      }
+
+      .alert-danger-modern {
+        background: rgba(239, 68, 68, 0.1);
+        color: #991b1b;
+        border-left: 4px solid var(--danger-color);
+      }
+
+      /* UI scansione: log + progress bar */
+      .scan-progress-wrap {
+        margin-bottom: 1rem;
+      }
+      .scan-logs {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-bottom: 0.5rem;
+        max-height: 110px;
+        overflow-y: auto;
+        border-left: 4px solid var(--primary-color);
+        padding-left: 0.75rem;
+      }
+      .scan-log-item {
+        margin-bottom: 0.25rem;
+      }
+      .scan-log-item a {
+        color: var(--primary-color);
+        text-decoration: none;
+      }
+      .scan-progress {
+        margin: 0.25rem 0 1rem;
+      }
+      .scan-progress-bar-bg {
+        width: 100%;
+        height: 10px;
+        background: #e2e8f0;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .scan-progress-bar-fill {
+        height: 100%;
+        background: var(--primary-color);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+      .scan-progress-text {
+        margin-top: 0.25rem;
+        font-size: 0.8rem;
+        color: #64748b;
+        text-align: right;
+      }
+
+      .modal-modern .modal-content {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+      }
+
+      .modal-modern .modal-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: white;
+        border: none;
+      }
+
+      .form-control-modern {
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.75rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-control-modern:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+      }
+
+      @media (max-width: 768px) {
+        .main-container {
+          margin: 10px;
         }
-        
-        .filter-pill.active {
-            background: var(--primary-color);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+
+        .header h1 {
+          font-size: 2rem;
         }
-        
-        .filter-pill:not(.active) {
-            background: white;
-            color: #64748b;
-            border-color: #e2e8f0;
-        }
-        
-        .filter-pill:not(.active):hover {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-            transform: translateY(-1px);
-        }
-        
-        .content-section {
-            padding: 2rem;
-        }
-        
+
         .manga-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
+          grid-template-columns: 1fr;
         }
-        
-        .manga-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-            position: relative;
+
+        .filter-pills {
+          justify-content: flex-start;
         }
-        
-        .manga-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-            border-color: var(--primary-color);
-        }
-        
-        .manga-status {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--success-color);
-        }
-        
-        .manga-status.unread {
-            background: var(--warning-color);
-        }
-        
-        .manga-status.has-updates {
-            background: #ff4444;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
-            }
-        }
-        
-        .manga-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: #1f2937;
-        }
-        
-        .manga-link {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .manga-link:hover {
-            color: var(--secondary-color);
-        }
-        
-        .manga-date {
-            color: #64748b;
-            font-size: 0.85rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .manga-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .btn-modern {
-            padding: 0.4rem 0.8rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        
-        .btn-success-modern {
-            background: var(--success-color);
-            color: white;
-        }
-        
-        .btn-primary-modern {
-            background: var(--primary-color);
-            color: white;
-        }
-        
-        .btn-danger-modern {
-            background: var(--danger-color);
-            color: white;
-        }
-        
-        .btn-modern:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
+
         .stats-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+          grid-template-columns: 1fr;
         }
-        
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e2e8f0;
-        }
-        
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        
-        .stat-label {
-            color: #64748b;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
-        
-        .floating-add {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            border-radius: 50%;
-            box-shadow: 0 8px 16px rgba(14, 165, 233, 0.3);
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-        
-        .floating-add:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(14, 165, 233, 0.4);
-        }
-        
-        .search-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .search-input-group {
-            display: flex;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(14, 165, 233, 0.15);
-            border: 2px solid #e2e8f0;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-        
-        .search-input-group:focus-within {
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
-        }
-        
-        .search-input {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            border: none;
-            outline: none;
-            font-size: 0.95rem;
-            background: transparent;
-            color: #374151;
-        }
-        
-        .search-btn {
-            padding: 0.75rem 1.25rem;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-        
-        .alert-modern {
-            border: none;
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .alert-success-modern {
-            background: rgba(16, 185, 129, 0.1);
-            color: #065f46;
-            border-left: 4px solid var(--success-color);
-        }
-        
-        .alert-danger-modern {
-            background: rgba(239, 68, 68, 0.1);
-            color: #991b1b;
-            border-left: 4px solid var(--danger-color);
-        }
-
-        /* UI scansione: log + progress bar */
-        .scan-progress-wrap {
-            margin-bottom: 1rem;
-        }
-        .scan-logs {
-            font-size: 0.8rem;
-            color: #64748b;
-            margin-bottom: 0.5rem;
-            max-height: 110px;
-            overflow-y: auto;
-            border-left: 4px solid var(--primary-color);
-            padding-left: 0.75rem;
-        }
-        .scan-log-item { margin-bottom: 0.25rem; }
-        .scan-log-item a { color: var(--primary-color); text-decoration: none; }
-        .scan-progress { margin: 0.25rem 0 1rem; }
-        .scan-progress-bar-bg {
-            width: 100%;
-            height: 10px;
-            background: #e2e8f0;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        .scan-progress-bar-fill {
-            height: 100%;
-            background: var(--primary-color);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        .scan-progress-text {
-            margin-top: 0.25rem;
-            font-size: 0.8rem;
-            color: #64748b;
-            text-align: right;
-        }
-        
-        .modal-modern .modal-content {
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-        
-        .modal-modern .modal-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-        }
-        
-        .form-control-modern {
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 0.75rem;
-            transition: all 0.3s ease;
-        }
-        
-        .form-control-modern:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
-        }
-        
-        @media (max-width: 768px) {
-            .main-container {
-                margin: 10px;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .manga-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .filter-pills {
-                justify-content: flex-start;
-            }
-            
-            .stats-section {
-                grid-template-columns: 1fr;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="main-container">
-        <div class="header">
-            <button class="logout-btn" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-            <h1>📚 MangaDB</h1>
-            <div class="subtitle">La tua collezione manga sempre organizzata</div>
-        </div>
-        
-        <div class="content">
-            <div id="message-alert" class="alert-modern alert-success-modern" style="display: none;">
-                <i class="fas fa-check-circle"></i> <span id="message-text"></span>
-            </div>
+      <div class="header">
+        <button class="logout-btn" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+        <h1>📚 MangaDB</h1>
+        <div class="subtitle">La tua collezione manga sempre organizzata</div>
+      </div>
 
-            <!-- UI Scansione: Log + Progress Bar -->
-            <div id="scan-ui" class="scan-progress-wrap" style="display: none;">
-                <div id="scan-logs" class="scan-logs"></div>
-                <div class="scan-progress">
-                    <div class="scan-progress-bar-bg">
-                        <div id="scan-progress-bar" class="scan-progress-bar-fill" style="width: 0%"></div>
-                    </div>
-                    <div id="scan-progress-text" class="scan-progress-text">0% (0/0)</div>
-                </div>
-            </div>
-            
-            <div id="error-alert" class="alert-modern alert-danger-modern" style="display: none;">
-                <i class="fas fa-exclamation-circle"></i> <span id="error-text"></span>
-            </div>
-            
-            <!-- Filtri -->
-            <div class="filter-section">
-                <!-- Search Bar -->
-                <div class="filter-group">
-                    <div class="search-container">
-                        <div class="search-input-group">
-                            <input type="text" 
-                                   id="search-input"
-                                   placeholder="Cerca per nome manga..." 
-                                   class="search-input">
-                            <button onclick="searchManga()" class="search-btn">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Filtri Status -->
-                <div class="filter-group">
-                    <div class="filter-pills">
-                        <div class="filter-pill active" data-filter="all" onclick="setStatusFilter('all')">
-                            <i class="fas fa-list"></i> Tutti (<span id="total-count">0</span>)
-                        </div>
-                        <div class="filter-pill" data-filter="unread" onclick="setStatusFilter('unread')">
-                            <i class="fas fa-clock"></i> Non Letti
-                        </div>
-                        <div class="filter-pill" data-filter="read" onclick="setStatusFilter('read')">
-                            <i class="fas fa-check"></i> Letti
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Filtri Data -->
-                <div class="filter-group">
-                    <div class="filter-pills">
-                        <div class="filter-pill active" data-sort="none" onclick="setSortFilter('none')">
-                            <i class="fas fa-sort"></i> Ordine Normale
-                        </div>
-                        <div class="filter-pill" data-sort="newest" onclick="setSortFilter('newest')">
-                            <i class="fas fa-sort-amount-down"></i> Più Recenti
-                        </div>
-                        <div class="filter-pill" data-sort="oldest" onclick="setSortFilter('oldest')">
-                            <i class="fas fa-sort-amount-up"></i> Meno Recenti
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Pulsante Aggiornamenti -->
-                <div class="filter-group">
-                    <div class="filter-pills">
-                        <button class="filter-pill" onclick="checkMangaUpdates()" style="background: var(--success-color); color: white; border: none;">
-                            <i class="fas fa-sync-alt"></i> Controlla Aggiornamenti
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="content-section">
-                <!-- Statistiche -->
-                <div class="stats-section">
-                    <div class="stat-card">
-                        <div class="stat-number" id="stat-total">0</div>
-                        <div class="stat-label">Totale Manga</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="stat-read">0</div>
-                        <div class="stat-label">Letti</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="stat-unread">0</div>
-                        <div class="stat-label">Non Letti</div>
-                    </div>
-                </div>
-                
-                <!-- Grid Manga -->
-                <div id="manga-grid" class="manga-grid">
-                    <!-- I manga verranno caricati dinamicamente -->
-                </div>
-            </div>
+      <div class="content">
+        <div
+          id="message-alert"
+          class="alert-modern alert-success-modern"
+          style="display: none"
+        >
+          <i class="fas fa-check-circle"></i> <span id="message-text"></span>
         </div>
+
+        <!-- UI Scansione: Log + Progress Bar -->
+        <div id="scan-ui" class="scan-progress-wrap" style="display: none">
+          <div id="scan-logs" class="scan-logs"></div>
+          <div class="scan-progress">
+            <div class="scan-progress-bar-bg">
+              <div
+                id="scan-progress-bar"
+                class="scan-progress-bar-fill"
+                style="width: 0%"
+              ></div>
+            </div>
+            <div id="scan-progress-text" class="scan-progress-text">
+              0% (0/0)
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="error-alert"
+          class="alert-modern alert-danger-modern"
+          style="display: none"
+        >
+          <i class="fas fa-exclamation-circle"></i>
+          <span id="error-text"></span>
+        </div>
+
+        <!-- Filtri -->
+        <div class="filter-section">
+          <!-- Search Bar -->
+          <div class="filter-group">
+            <div class="search-container">
+              <div class="search-input-group">
+                <input
+                  type="text"
+                  id="search-input"
+                  placeholder="Cerca per nome manga..."
+                  class="search-input"
+                />
+                <button onclick="searchManga()" class="search-btn">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtri Status -->
+          <div class="filter-group">
+            <div class="filter-pills">
+              <div
+                class="filter-pill active"
+                data-filter="all"
+                onclick="setStatusFilter('all')"
+              >
+                <i class="fas fa-list"></i> Tutti (<span id="total-count"
+                  >0</span
+                >)
+              </div>
+              <div
+                class="filter-pill"
+                data-filter="unread"
+                onclick="setStatusFilter('unread')"
+              >
+                <i class="fas fa-clock"></i> Non Letti
+              </div>
+              <div
+                class="filter-pill"
+                data-filter="read"
+                onclick="setStatusFilter('read')"
+              >
+                <i class="fas fa-check"></i> Letti
+              </div>
+              <div
+                class="filter-pill"
+                data-filter="planning"
+                onclick="setStatusFilter('planning')"
+              >
+                <i class="fas fa-calendar"></i> Pianificati
+              </div>
+              <div
+                class="filter-pill"
+                data-filter="dropped"
+                onclick="setStatusFilter('dropped')"
+              >
+                <i class="fas fa-times"></i> Abbandonati
+              </div>
+              <div
+                class="filter-pill"
+                data-filter="updates"
+                onclick="setStatusFilter('updates')"
+              >
+                <i class="fas fa-bell"></i> Novità (<span id="updates-count"
+                  >0</span
+                >)
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtri Data -->
+          <div class="filter-group">
+            <div class="filter-pills">
+              <div
+                class="filter-pill active"
+                data-sort="none"
+                onclick="setSortFilter('none')"
+              >
+                <i class="fas fa-sort"></i> Ordine Normale
+              </div>
+              <div
+                class="filter-pill"
+                data-sort="newest"
+                onclick="setSortFilter('newest')"
+              >
+                <i class="fas fa-sort-amount-down"></i> Più Recenti
+              </div>
+              <div
+                class="filter-pill"
+                data-sort="oldest"
+                onclick="setSortFilter('oldest')"
+              >
+                <i class="fas fa-sort-amount-up"></i> Meno Recenti
+              </div>
+            </div>
+          </div>
+
+          <!-- Pulsante Aggiornamenti -->
+          <div class="filter-group">
+            <div class="filter-pills">
+              <button
+                class="filter-pill"
+                onclick="checkMangaUpdates()"
+                style="
+                  background: var(--success-color);
+                  color: white;
+                  border: none;
+                "
+              >
+                <i class="fas fa-sync-alt"></i> Controlla Aggiornamenti
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-section">
+          <!-- Statistiche -->
+          <div class="stats-section">
+            <div class="stat-card">
+              <div class="stat-number" id="stat-total">0</div>
+              <div class="stat-label">Totale Manga</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="stat-read">0</div>
+              <div class="stat-label">Letti</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="stat-unread">0</div>
+              <div class="stat-label">Non Letti</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="stat-planning">0</div>
+              <div class="stat-label">Pianificati</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number" id="stat-dropped">0</div>
+              <div class="stat-label">Abbandonati</div>
+            </div>
+          </div>
+
+          <!-- Grid Manga -->
+          <div id="manga-grid" class="manga-grid">
+            <!-- I manga verranno caricati dinamicamente -->
+          </div>
+        </div>
+      </div>
     </div>
-    
+
     <!-- Floating Add Button -->
     <button class="floating-add" onclick="showAddModal()">
-        <i class="fas fa-plus"></i>
+      <i class="fas fa-plus"></i>
     </button>
-    
+
     <!-- Modal Aggiungi/Modifica Manga -->
     <div class="modal fade modal-modern" id="mangaModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Aggiungi Manga</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="manga-form">
-                        <input type="hidden" id="manga-id">
-                        <div class="mb-3">
-                            <label for="manga-name" class="form-label">Nome Manga</label>
-                            <input type="text" class="form-control form-control-modern" id="manga-name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="manga-link" class="form-label">Link</label>
-                            <input type="url" class="form-control form-control-modern" id="manga-link" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="manga-chapters" class="form-label">Capitoli Letti</label>
-                            <input type="number" 
-                                   class="form-control" 
-                                   id="manga-chapters" 
-                                   step="0.1" 
-                                   min="0" 
-                                   placeholder="es. 1.2">
-                        </div>
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="manga-started">
-                                <label class="form-check-label" for="manga-started">
-                                    Già iniziato a leggere
-                                </label>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" class="btn btn-primary" onclick="saveManga()">Salva</button>
-                </div>
-            </div>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalTitle">Aggiungi Manga</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="manga-form">
+              <input type="hidden" id="manga-id" />
+              <div class="mb-3">
+                <label for="manga-name" class="form-label">Nome Manga</label>
+                <input
+                  type="text"
+                  class="form-control form-control-modern"
+                  id="manga-name"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="manga-link" class="form-label">Link</label>
+                <input
+                  type="url"
+                  class="form-control form-control-modern"
+                  id="manga-link"
+                  required
+                />
+              </div>
+              <div class="mb-3">
+                <label for="manga-chapters" class="form-label"
+                  >Capitoli Letti</label
+                >
+                <input
+                  type="number"
+                  class="form-control"
+                  id="manga-chapters"
+                  step="0.1"
+                  min="0"
+                  placeholder="es. 1.2"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="manga-status" class="form-label">Stato</label>
+                <select
+                  class="form-control form-control-modern"
+                  id="manga-status"
+                >
+                  <option value="unread">Non Letto</option>
+                  <option value="reading">In Lettura (Scansiona)</option>
+                  <option value="planning">Pianificato</option>
+                  <option value="dropped">Abbandonato</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Annulla
+            </button>
+            <button type="button" class="btn btn-primary" onclick="saveManga()">
+              Salva
+            </button>
+          </div>
         </div>
+      </div>
     </div>
 
     <script src="./scripts/bootstrap1.min.js"></script>
@@ -657,27 +800,10 @@
     <!-- Correggi l'inclusione di DuckDB -->
 
     <script type="module">
-       // import * as duckdb from 'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.28.0/+esm';
-        import * as duckdb from './scripts/duckdb-bundle.js'
-        window.duckdb = duckdb;
+      // import * as duckdb from 'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.28.0/+esm';
+      import * as duckdb from "./scripts/duckdb-bundle.js";
+      window.duckdb = duckdb;
     </script>
-
-
-
-
-
-
-
-
-
-   
-
-
-
-
-
-
-
 
     <script src="./scripts/arrow.min.js"></script>
     <script src="./scripts/auth.js"></script>
@@ -685,7 +811,7 @@
     <script src="./scripts/update-router.js"></script>
     <script src="./scripts/providers/mangabuddy.js"></script>
     <script src="./scripts/providers/manhwabuddy.js"></script>
-    <script src="./scripts/updates.js"></script>
-    <script src="./scripts/app.js"></script>
+    <script src="./scripts/updates.js?v=statusfix2"></script>
+    <script src="./scripts/app.js?v=statusfix2"></script>
 </body>
 </html>
