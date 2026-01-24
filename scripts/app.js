@@ -57,6 +57,10 @@ function filterAndDisplayManga() {
     );
   } else if (currentStatusFilter === "dropped") {
     filteredManga = filteredManga.filter((manga) => manga.status === "dropped");
+  } else if (currentStatusFilter === "completed") {
+    filteredManga = filteredManga.filter(
+      (manga) => manga.status === "completed",
+    );
   } else if (currentStatusFilter === "updates") {
     filteredManga = filteredManga.filter(
       (manga) =>
@@ -112,6 +116,8 @@ function displayManga(manga) {
         statusClass = "planning";
       } else if (status === "dropped") {
         statusClass = "dropped";
+      } else if (status === "completed") {
+        statusClass = "completed";
       }
 
       return `
@@ -156,6 +162,7 @@ async function updateStats() {
     document.getElementById("stat-unread").textContent = stats.unread;
     document.getElementById("stat-planning").textContent = stats.planning;
     document.getElementById("stat-dropped").textContent = stats.dropped;
+    document.getElementById("stat-completed").textContent = stats.completed;
     document.getElementById("total-count").textContent = stats.total;
   } catch (error) {
     console.error("Errore nell'aggiornamento delle statistiche:", error);
@@ -172,6 +179,9 @@ function updateFilterCounts() {
   ).length;
   const planningCount = allManga.filter((m) => m.status === "planning").length;
   const droppedCount = allManga.filter((m) => m.status === "dropped").length;
+  const completedCount = allManga.filter(
+    (m) => m.status === "completed",
+  ).length;
   const updatesCount = allManga.filter(
     (m) => typeof mangaHasUpdates !== "undefined" && mangaHasUpdates(m.link),
   ).length;
@@ -187,6 +197,9 @@ function updateFilterCounts() {
     `;
   document.querySelector('[data-filter="dropped"]').innerHTML = `
         <i class="fas fa-times"></i> Abbandonati (${droppedCount})
+    `;
+  document.querySelector('[data-filter="completed"]').innerHTML = `
+        <i class="fas fa-check-double"></i> Completati (${completedCount})
     `;
   document.querySelector('[data-filter="updates"]').innerHTML = `
         <i class="fas fa-bell"></i> Novità (${updatesCount})

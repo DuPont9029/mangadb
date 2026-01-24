@@ -226,6 +226,10 @@
         background: var(--danger-color);
       }
 
+      .manga-status.completed {
+        background: #8b5cf6;
+      }
+
       .manga-status.has-updates {
         background: #ff4444;
         animation: pulse 2s infinite;
@@ -626,6 +630,13 @@
               </div>
               <div
                 class="filter-pill"
+                data-filter="completed"
+                onclick="setStatusFilter('completed')"
+              >
+                <i class="fas fa-check-double"></i> Completati
+              </div>
+              <div
+                class="filter-pill"
                 data-filter="updates"
                 onclick="setStatusFilter('updates')"
               >
@@ -704,6 +715,10 @@
               <div class="stat-number" id="stat-dropped">0</div>
               <div class="stat-label">Abbandonati</div>
             </div>
+            <div class="stat-card">
+              <div class="stat-number" id="stat-completed">0</div>
+              <div class="stat-label">Completati</div>
+            </div>
           </div>
 
           <!-- Grid Manga -->
@@ -774,6 +789,7 @@
                   <option value="unread">Non Letto</option>
                   <option value="reading">In Lettura (Scansiona)</option>
                   <option value="planning">Pianificato</option>
+                  <option value="completed">Completato</option>
                   <option value="dropped">Abbandonato</option>
                 </select>
               </div>
@@ -807,11 +823,11 @@
 
     <script src="./scripts/arrow.min.js"></script>
     <script src="./scripts/auth.js"></script>
-    <script src="./scripts/manga-manager.js?v=linkfix2"></script>
+    <script src="./scripts/manga-manager.js?v=completedfix1"></script>
     <script src="./scripts/update-router.js"></script>
     <script src="./scripts/providers/mangabuddy.js"></script>
     <script src="./scripts/providers/manhwabuddy.js"></script>
-    <script src="./scripts/updates.js?v=statusfix2"></script>
-    <script src="./scripts/app.js?v=statusfix2"></script>
-</body>
+    <script src="./scripts/updates.js?v=completedfix1"></script>
+    <script src="./scripts/app.js?v=completedfix1"></script>
+  </body>
 </html>
