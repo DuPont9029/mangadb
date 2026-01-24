@@ -481,7 +481,8 @@ class MangaManager {
                     COUNT(CASE WHEN status = 'reading' OR (status IS NULL AND started = true) THEN 1 END) as reading,
                     COUNT(CASE WHEN status = 'unread' OR (status IS NULL AND started = false) THEN 1 END) as unread,
                     COUNT(CASE WHEN status = 'planning' THEN 1 END) as planning,
-                    COUNT(CASE WHEN status = 'dropped' THEN 1 END) as dropped
+                    COUNT(CASE WHEN status = 'dropped' THEN 1 END) as dropped,
+                    COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed
                 FROM manga
             `);
       const row = result.toArray()[0];
@@ -494,6 +495,7 @@ class MangaManager {
         unread: row.unread,
         planning: row.planning,
         dropped: row.dropped,
+        completed: row.completed,
       };
     } catch (error) {
       console.error("Errore nel calcolo delle statistiche:", error);
@@ -505,6 +507,7 @@ class MangaManager {
         unread: 0,
         planning: 0,
         dropped: 0,
+        completed: 0,
       };
     } finally {
       await conn.close();
