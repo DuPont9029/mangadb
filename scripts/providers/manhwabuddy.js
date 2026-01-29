@@ -8,6 +8,8 @@
     const proxyUrls = [
       `https://corsproxy.io/?${url}`,
       `https://corsproxy.io/?${encodeURIComponent(url)}`,
+      `https://api.cors.lol/?url=${url}`,
+      `https://api.cors.lol/?url=${encodeURIComponent(url)}`,
     ];
     for (const proxyUrl of proxyUrls) {
       try {
