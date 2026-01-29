@@ -6,6 +6,7 @@
 
     // Prefer corsproxy.io first
     const proxyUrls = [
+      `https://mangadb-cors-proxy-g9xw27m9e-dupont9029s-projects.vercel.app/api/index?url=${encodeURIComponent(url)}`,
       `https://corsproxy.io/?${url}`,
       `https://corsproxy.io/?${encodeURIComponent(url)}`,
       `https://api.cors.lol/?url=${url}`,
