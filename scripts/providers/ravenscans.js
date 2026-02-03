@@ -12,6 +12,24 @@
       `https://api.cors.lol/?url=${encodeURIComponent(url)}`,
     ];
 
+    // Aggiungi custom proxy se presente
+    const customProxy = localStorage.getItem("custom_proxy_url");
+    if (customProxy) {
+      // Se l'utente ha inserito "url=", lo usiamo così com'è, altrimenti appendiamo
+      let formattedProxy = customProxy;
+      if (!customProxy.includes("url=")) {
+        // Aggiungi separatore query string corretto
+        const separator = customProxy.includes("?") ? "&" : "?";
+        formattedProxy = `${customProxy}${separator}url=${encodeURIComponent(url)}`;
+      } else {
+        // Sostituisci eventuale placeholder o appendi
+        formattedProxy = `${customProxy}${encodeURIComponent(url)}`;
+      }
+      // Metti il custom proxy all'inizio della lista
+      proxyUrls.unshift(formattedProxy);
+      console.debug(`[ravenscans] Added custom proxy: ${formattedProxy}`);
+    }
+
     for (const proxyUrl of proxyUrls) {
       try {
         console.debug(`[ravenscans] Trying proxy: ${proxyUrl}`);

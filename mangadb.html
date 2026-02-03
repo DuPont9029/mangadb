@@ -85,6 +85,83 @@
         transform: translateY(-2px);
       }
 
+      /* Menu Styles */
+      .menu-container {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1000;
+      }
+
+      .menu-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+      }
+
+      .menu-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        min-width: 220px;
+        padding: 0.5rem 0;
+        margin-top: 0.5rem;
+        overflow: hidden;
+        animation: fadeIn 0.2s ease;
+        text-align: left;
+      }
+
+      .dropdown-menu.show {
+        display: block;
+      }
+
+      .dropdown-menu a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.75rem 1.5rem;
+        color: #374151;
+        text-decoration: none;
+        transition: background 0.2s;
+        font-size: 0.95rem;
+      }
+
+      .dropdown-menu a:hover {
+        background: #f3f4f6;
+        color: var(--primary-color);
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background: #e5e7eb;
+        margin: 0.5rem 0;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
       /* Media queries per responsive design */
       @media (max-width: 768px) {
         .header {
@@ -527,9 +604,49 @@
   <body>
     <div class="main-container">
       <div class="header">
-        <button class="logout-btn" onclick="logout()">
-          <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
+        <div class="menu-container">
+          <button class="menu-btn" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="dropdown-menu" id="main-menu">
+            <a
+              href="#"
+              onclick="
+                createBackup();
+                toggleMenu();
+              "
+              ><i class="fas fa-archive"></i> Backup</a
+            >
+            <a
+              href="#"
+              onclick="
+                saveToS3();
+                toggleMenu();
+              "
+              ><i class="fas fa-cloud-upload-alt"></i> Salva su S3</a
+            >
+            <a
+              href="#"
+              onclick="
+                recompactIds();
+                toggleMenu();
+              "
+              ><i class="fas fa-compress-alt"></i> Ricompatta ID</a
+            >
+            <div class="dropdown-divider"></div>
+            <a
+              href="#"
+              onclick="
+                openSettings();
+                toggleMenu();
+              "
+              ><i class="fas fa-cog"></i> Impostazioni</a
+            >
+            <a href="#" onclick="logout()"
+              ><i class="fas fa-sign-out-alt"></i> Logout</a
+            >
+          </div>
+        </div>
         <h1>📚 MangaDB</h1>
         <div class="subtitle">La tua collezione manga sempre organizzata</div>
       </div>
@@ -821,14 +938,66 @@
       window.duckdb = duckdb;
     </script>
 
+    <!-- Modal Settings -->
+    <div class="modal fade modal-modern" id="settingsModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Impostazioni</h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="settings-form">
+              <div class="mb-3">
+                <label for="custom-proxy" class="form-label"
+                  >Custom Proxy URL</label
+                >
+                <div class="form-text text-muted mb-2">
+                  Inserisci l'URL del tuo proxy CORS. Se impostato, verrà usato
+                  come prima opzione.<br />
+                  Esempio: <code>https://my-proxy.com/?url=</code>
+                </div>
+                <input
+                  type="url"
+                  class="form-control form-control-modern"
+                  id="custom-proxy"
+                  placeholder="https://..."
+                />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Annulla
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary-modern"
+              onclick="saveSettings()"
+            >
+              Salva
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="./scripts/arrow.min.js"></script>
     <script src="./scripts/auth.js"></script>
-    <script src="./scripts/manga-manager.js?v=completedfix1"></script>
+    <script src="./scripts/manga-manager.js?v=backupfix2"></script>
     <script src="./scripts/update-router.js"></script>
     <script src="./scripts/providers/mangabuddy.js"></script>
     <script src="./scripts/providers/manhwabuddy.js"></script>
     <script src="./scripts/providers/ravenscans.js"></script>
-    <script src="./scripts/updates.js?v=completedfix1"></script>
-    <script src="./scripts/app.js?v=completedfix1"></script>
+    <script src="./scripts/updates.js?v=backupfix2"></script>
+    <script src="./scripts/app.js?v=backupfix2"></script>
   </body>
 </html>
