@@ -400,6 +400,43 @@ async function createBackup() {
   }
 }
 
+// Impostazioni
+function openSettings() {
+  const customProxy = localStorage.getItem("custom_proxy_url") || "";
+  document.getElementById("custom-proxy").value = customProxy;
+  new bootstrap.Modal(document.getElementById("settingsModal")).show();
+}
+
+function saveSettings() {
+  const customProxy = document.getElementById("custom-proxy").value.trim();
+  if (customProxy) {
+    localStorage.setItem("custom_proxy_url", customProxy);
+  } else {
+    localStorage.removeItem("custom_proxy_url");
+  }
+  bootstrap.Modal.getInstance(document.getElementById("settingsModal")).hide();
+  showMessage("Impostazioni salvate!");
+}
+
+// Menu Toggle
+function toggleMenu() {
+  document.getElementById("main-menu").classList.toggle("show");
+}
+
+// Chiudi menu se si clicca fuori
+document.addEventListener("click", function (event) {
+  const menu = document.getElementById("main-menu");
+  const btn = document.querySelector(".menu-btn");
+  if (
+    menu &&
+    btn &&
+    !menu.contains(event.target) &&
+    !btn.contains(event.target)
+  ) {
+    menu.classList.remove("show");
+  }
+});
+
 // Utility functions
 function showMessage(message, type = "success") {
   const alert = document.getElementById("message-alert");
@@ -449,33 +486,3 @@ function formatDate(dateString) {
     minute: "2-digit",
   });
 }
-
-// Aggiungi pulsanti per operazioni avanzate
-document.addEventListener("DOMContentLoaded", () => {
-  // Aggiungi pulsante salva S3 nell'header
-  const header = document.querySelector(".header");
-  if (header) {
-    const saveBtn = document.createElement("button");
-    saveBtn.className = "logout-btn";
-    saveBtn.style.right = "120px";
-    saveBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Salva S3';
-    saveBtn.onclick = saveToS3;
-    header.appendChild(saveBtn);
-
-    const compactBtn = document.createElement("button");
-    compactBtn.className = "logout-btn";
-    compactBtn.style.right = "240px";
-    compactBtn.innerHTML = '<i class="fas fa-compress-alt"></i> Ricompatta';
-    compactBtn.onclick = recompactIds;
-    header.appendChild(compactBtn);
-
-    // Pulsante di backup posizionato a sinistra del titolo
-    const backupBtn = document.createElement("button");
-    backupBtn.className = "logout-btn";
-    backupBtn.style.left = "1rem"; // Posiziona a sinistra
-    backupBtn.style.right = "auto"; // Rimuovi il posizionamento a destra
-    backupBtn.innerHTML = '<i class="fas fa-archive"></i> Backup';
-    backupBtn.onclick = createBackup;
-    header.appendChild(backupBtn);
-  }
-});
