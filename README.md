@@ -45,6 +45,19 @@
 - Policy granulari per bucket
 - Crittografia end-to-end
 
+## 🌐 Siti Supportati
+
+<div align="center">
+
+| Logo | Sito | Descrizione |
+|:---:|:---|:---|
+| <img src="https://www.google.com/s2/favicons?domain=mangabuddy.com&sz=64" width="32"> | **MangaBuddy** | Ampia collezione di manga e manhua |
+| <img src="https://www.google.com/s2/favicons?domain=manhwabuddy.com&sz=64" width="32"> | **ManhwaBuddy** | Specializzato in manhwa e webtoon coreani |
+| <img src="https://www.google.com/s2/favicons?domain=ravenscans.com&sz=64" width="32"> | **RavenScans** | Scanlation group con titoli esclusivi |
+| <img src="https://www.google.com/s2/favicons?domain=mangafire.to&sz=64" width="32"> | **MangaFire** | Interfaccia moderna e aggiornamenti rapidi |
+
+</div>
+
 ---
 
 ## 🚀 Quick Start
