@@ -4,9 +4,108 @@ let currentSortFilter = "none";
 let currentSearchTerm = "";
 let allManga = [];
 
+// Theme Manager
+const defaultTheme = {
+  "--primary-color": "#0ea5e9",
+  "--secondary-color": "#0284c7",
+  "--success-color": "#10b981",
+  "--danger-color": "#ef4444",
+  "--warning-color": "#f59e0b",
+  "--bg-body-start": "#0ea5e9",
+  "--bg-body-end": "#0284c7",
+  "--bg-container-rgb": "255, 255, 255",
+  "--bg-card": "#ffffff",
+  "--bg-filter-section": "#f8fafc",
+  "--bg-input": "#f8fafc",
+  "--text-main": "#374151",
+  "--text-muted": "#64748b",
+  "--border-color": "#e2e8f0",
+};
+
+// Helper to convert hex to rgb
+function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}`
+    : "255, 255, 255";
+}
+
+// Helper to convert rgb string "r, g, b" to hex
+function rgbToHex(rgbStr) {
+  const [r, g, b] = rgbStr.split(",").map((x) => parseInt(x.trim()));
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
+function loadTheme() {
+  const savedTheme = JSON.parse(localStorage.getItem("mangadb_theme") || "{}");
+  const theme = { ...defaultTheme, ...savedTheme };
+
+  Object.entries(theme).forEach(([key, value]) => {
+    document.documentElement.style.setProperty(key, value);
+  });
+}
+
+function saveThemeSettings() {
+  const containerHex = document.getElementById("theme-bg-container").value;
+  const containerRgb = hexToRgb(containerHex);
+
+  const theme = {
+    "--primary-color": document.getElementById("theme-primary").value,
+    "--secondary-color": document.getElementById("theme-secondary").value,
+    "--success-color": document.getElementById("theme-success").value,
+    "--danger-color": document.getElementById("theme-danger").value,
+    "--warning-color": document.getElementById("theme-warning").value,
+    "--bg-body-start": document.getElementById("theme-bg-body-start").value,
+    "--bg-body-end": document.getElementById("theme-bg-body-end").value,
+    "--bg-container-rgb": containerRgb,
+    "--bg-card": document.getElementById("theme-bg-card").value,
+    "--bg-filter-section": document.getElementById("theme-bg-filter-section")
+      .value,
+    "--bg-input":
+      document.getElementById("theme-bg-card").value === "#000000"
+        ? "#1f2937"
+        : "#f8fafc", // Simple dark mode logic for input
+    "--text-main": document.getElementById("theme-text-main").value,
+    "--text-muted": document.getElementById("theme-text-muted").value,
+    "--border-color":
+      document.getElementById("theme-bg-card").value === "#000000" ||
+      document.getElementById("theme-bg-card").value < "#444444"
+        ? "#374151"
+        : "#e2e8f0",
+  };
+
+  // Advanced dark mode logic: if card is dark, make input and border dark
+  // Check brightness of card bg
+  const cardHex = theme["--bg-card"];
+  const r = parseInt(cardHex.substr(1, 2), 16);
+  const g = parseInt(cardHex.substr(3, 2), 16);
+  const b = parseInt(cardHex.substr(5, 2), 16);
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+
+  if (yiq < 128) {
+    theme["--bg-input"] = "#1f2937"; // Dark input
+    theme["--border-color"] = "#374151"; // Dark border
+  } else {
+    theme["--bg-input"] = "#f8fafc"; // Light input
+    theme["--border-color"] = "#e2e8f0"; // Light border
+  }
+
+  localStorage.setItem("mangadb_theme", JSON.stringify(theme));
+  loadTheme();
+}
+
+function resetTheme() {
+  if (confirm("Vuoi davvero ripristinare i colori di default?")) {
+    localStorage.removeItem("mangadb_theme");
+    loadTheme();
+    openSettings(); // Refresh inputs
+  }
+}
+
 // Inizializzazione dell'app
 document.addEventListener("DOMContentLoaded", async () => {
   try {
+    loadTheme();
     showMessage("Inizializzazione in corso...", "info");
     await mangaManager.initialize();
     await loadManga();
@@ -404,6 +503,33 @@ async function createBackup() {
 function openSettings() {
   const customProxy = localStorage.getItem("custom_proxy_url") || "";
   document.getElementById("custom-proxy").value = customProxy;
+
+  // Load theme colors
+  const savedTheme = JSON.parse(localStorage.getItem("mangadb_theme") || "{}");
+  const theme = { ...defaultTheme, ...savedTheme };
+
+  // Set values for color inputs
+  document.getElementById("theme-primary").value = theme["--primary-color"];
+  document.getElementById("theme-secondary").value = theme["--secondary-color"];
+  document.getElementById("theme-success").value = theme["--success-color"];
+  document.getElementById("theme-danger").value = theme["--danger-color"];
+  document.getElementById("theme-warning").value = theme["--warning-color"];
+
+  // New fields
+  document.getElementById("theme-bg-body-start").value =
+    theme["--bg-body-start"];
+  document.getElementById("theme-bg-body-end").value = theme["--bg-body-end"];
+  document.getElementById("theme-bg-card").value = theme["--bg-card"];
+  document.getElementById("theme-bg-filter-section").value =
+    theme["--bg-filter-section"];
+  document.getElementById("theme-text-main").value = theme["--text-main"];
+  document.getElementById("theme-text-muted").value = theme["--text-muted"];
+
+  // Container needs hex from rgb
+  document.getElementById("theme-bg-container").value = rgbToHex(
+    theme["--bg-container-rgb"],
+  );
+
   new bootstrap.Modal(document.getElementById("settingsModal")).show();
 }
 
@@ -414,6 +540,9 @@ function saveSettings() {
   } else {
     localStorage.removeItem("custom_proxy_url");
   }
+
+  saveThemeSettings();
+
   bootstrap.Modal.getInstance(document.getElementById("settingsModal")).hide();
   showMessage("Impostazioni salvate!");
 }
