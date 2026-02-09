@@ -866,14 +866,27 @@
           <div class="modal-body">
             <form id="manga-form">
               <input type="hidden" id="manga-id" />
-              <div class="mb-3">
+              <div class="mb-3 position-relative">
                 <label for="manga-name" class="form-label">Nome Manga</label>
-                <input
-                  type="text"
-                  class="form-control form-control-modern"
-                  id="manga-name"
-                  required
-                />
+                <div class="input-group">
+                  <input
+                    type="text"
+                    class="form-control form-control-modern"
+                    id="manga-name"
+                    required
+                    autocomplete="off"
+                    placeholder="Digita per cercare online..."
+                  />
+                  <span class="input-group-text d-none" id="search-loading">
+                    <i class="fas fa-spinner fa-spin text-primary"></i>
+                  </span>
+                </div>
+                <!-- Contenitore Suggerimenti -->
+                <div
+                  id="search-suggestions"
+                  class="dropdown-menu w-100 shadow-lg border-0 mt-1"
+                  style="max-height: 300px; overflow-y: auto; z-index: 1050"
+                ></div>
               </div>
               <div class="mb-3">
                 <label for="manga-link" class="form-label">Link</label>
@@ -968,6 +981,150 @@
                   placeholder="https://..."
                 />
               </div>
+
+              <hr class="my-4" />
+              <h6 class="mb-3">Personalizzazione Tema</h6>
+
+              <div class="row g-3">
+                <div class="col-6">
+                  <label for="theme-primary" class="form-label small"
+                    >Primary</label
+                  >
+                  <input
+                    type="color"
+                    class="form-control form-control-color w-100"
+                    id="theme-primary"
+                  />
+                </div>
+                <div class="col-6">
+                  <label for="theme-secondary" class="form-label small"
+                    >Secondary</label
+                  >
+                  <input
+                    type="color"
+                    class="form-control form-control-color w-100"
+                    id="theme-secondary"
+                  />
+                </div>
+                <div class="col-4">
+                  <label for="theme-success" class="form-label small"
+                    >Success</label
+                  >
+                  <input
+                    type="color"
+                    class="form-control form-control-color w-100"
+                    id="theme-success"
+                  />
+                </div>
+                <div class="col-4">
+                  <label for="theme-danger" class="form-label small"
+                    >Danger</label
+                  >
+                  <input
+                    type="color"
+                    class="form-control form-control-color w-100"
+                    id="theme-danger"
+                  />
+                </div>
+                <div class="col-4">
+                  <label for="theme-warning" class="form-label small"
+                    >Warning</label
+                  >
+                  <input
+                    type="color"
+                    class="form-control form-control-color w-100"
+                    id="theme-warning"
+                  />
+                </div>
+              </div>
+
+              <h6 class="mt-4 mb-3">Sfondo e Colori</h6>
+              <div class="row g-3">
+                <div class="col-6">
+                  <label for="theme-bg-body-start" class="form-label small"
+                    >Sfondo (Inizio)</label
+                  >
+                  <input
+                    type="color"
+                    class="form-control form-control-color w-100"
+                    id="theme-bg-body-start"
+                  />
+                </div>
+                <div class="col-6">
+                  <label for="theme-bg-body-end" class="form-label small"
+                    >Sfondo (Fine)</label
+                  >
+                  <input
+                    type="color"
+                    class="form-control form-control-color w-100"
+                    id="theme-bg-body-end"
+                  />
+                </div>
+                <div class="col-6">
+                  <label for="theme-bg-container" class="form-label small"
+                    >Contenitore</label
+                  >
+                  <input
+                    type="color"
+                    class="form-control form-control-color w-100"
+                    id="theme-bg-container"
+                  />
+                </div>
+                <div class="col-6">
+                  <label for="theme-bg-card" class="form-label small"
+                    >Card Sfondo</label
+                  >
+                  <input
+                    type="color"
+                    class="form-control form-control-color w-100"
+                    id="theme-bg-card"
+                  />
+                </div>
+                <div class="col-12">
+                  <label for="theme-bg-filter-section" class="form-label small"
+                    >Sezione Filtri</label
+                  >
+                  <input
+                    type="color"
+                    class="form-control form-control-color w-100"
+                    id="theme-bg-filter-section"
+                  />
+                </div>
+              </div>
+
+              <h6 class="mt-4 mb-3">Testo</h6>
+              <div class="row g-3">
+                <div class="col-6">
+                  <label for="theme-text-main" class="form-label small"
+                    >Testo Principale</label
+                  >
+                  <input
+                    type="color"
+                    class="form-control form-control-color w-100"
+                    id="theme-text-main"
+                  />
+                </div>
+                <div class="col-6">
+                  <label for="theme-text-muted" class="form-label small"
+                    >Testo Secondario</label
+                  >
+                  <input
+                    type="color"
+                    class="form-control form-control-color w-100"
+                    id="theme-text-muted"
+                  />
+                </div>
+              </div>
+
+              <div class="mt-4 text-center">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary btn-sm"
+                  onclick="resetTheme()"
+                >
+                  <i class="fas fa-undo"></i> Ripristina Default
+                </button>
+              </div>
             </form>
           </div>
           <div class="modal-footer">
@@ -992,6 +1149,7 @@
 
     <script src="./scripts/arrow.min.js"></script>
     <script src="./scripts/auth.js"></script>
+    <script src="./scripts/search-manager.js"></script>
     <script src="./scripts/manga-manager.js?v=backupfix2"></script>
     <script src="./scripts/update-router.js"></script>
     <script src="./scripts/providers/mangabuddy.js"></script>
