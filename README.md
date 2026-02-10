@@ -103,17 +103,36 @@
 ## 🛠️ Architettura Tecnologica
 
 ```mermaid
-graph TB
-    A["🌐 Browser"] --> B["📱 MangaDB UI"]
+---
+config:
+  layout: fixed
+---
+flowchart TB
+    A["🌐 Browser"] --> B["📱 MangaDB UI"] & n6["proxy"]
     B --> C["🦆 DuckDB WASM"]
     C --> E["📊 Parquet Files"]
     E --> D["☁️ AWS S3"]
     F["🔄 Backup System"] --> D
+    n1["providers"] -- nuovi capitoli --> B
+    n1 --> n2["mangabuddy"] & n3["manhwabuddy"] & n4["ravenscans"] & n5["mangafire"]
+    B -- ricerca diretta --> n2
+    n6 --> n1
 
+    n6@{ shape: rect}
+    n1@{ shape: rect}
+    n2@{ shape: rect}
+    n3@{ shape: rect}
+    n4@{ shape: rect}
+    n5@{ shape: rect}
     style A fill:#e1f5fe
     style B fill:#f3e5f5
+    style n6 fill:#FFF9C4
     style C fill:#fff3e0
     style D fill:#e8f5e8
+    style n2 fill:#2962FF,color:#FFFFFF
+    style n3 fill:#E1BEE7
+    style n4 fill:#FFCDD2
+    style n5 fill:#BBDEFB
 ```
 
 ### 🧩 Stack Tecnologico
