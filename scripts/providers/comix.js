@@ -1,6 +1,5 @@
 (function () {
   async function fetchHtml(url) {
-    const parser = new DOMParser();
     const attempts = [];
 
     // Lista dei proxy CORS da utilizzare
@@ -15,47 +14,44 @@
     // Aggiungi custom proxy se presente
     const customProxy = localStorage.getItem("custom_proxy_url");
     if (customProxy) {
-      // Se l'utente ha inserito "url=", lo usiamo così com'è, altrimenti appendiamo
       let formattedProxy = customProxy;
       if (!customProxy.includes("url=")) {
-        // Aggiungi separatore query string corretto
         const separator = customProxy.includes("?") ? "&" : "?";
         formattedProxy = `${customProxy}${separator}url=${encodeURIComponent(url)}`;
       } else {
-        // Sostituisci eventuale placeholder o appendi
         formattedProxy = `${customProxy}${encodeURIComponent(url)}`;
       }
-      // Metti il custom proxy all'inizio della lista
       proxyUrls.unshift(formattedProxy);
       console.debug(`[comix] Added custom proxy: ${formattedProxy}`);
     }
 
+    // Prova prima la chiamata diretta (che fallisce nel browser per CORS)
+    try {
+      console.debug(`[comix] Trying direct fetch: ${url}`);
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.text();
+    } catch (e) {
+      attempts.push(`direct -> ${e.message || e}`);
+      console.warn(`[comix] Direct fetch failed, falling back to proxies`);
+    }
+
+    // Se la chiamata diretta fallisce, prova i proxy
     for (const proxyUrl of proxyUrls) {
       try {
         console.debug(`[comix] Trying proxy: ${proxyUrl}`);
         const res = await fetch(proxyUrl);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const html = await res.text();
-        const doc = parser.parseFromString(html, "text/html");
-        return doc;
+        return await res.text();
       } catch (e) {
         attempts.push(`${proxyUrl} -> ${e.message || e}`);
         console.warn(`[comix] Proxy failed: ${proxyUrl}`, e);
       }
     }
 
-    // Ultimo tentativo: diretto
-    try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-      const html = await res.text();
-      return parser.parseFromString(html, "text/html");
-    } catch (err) {
-      attempts.push(`direct:${url} -> ${err.message || err}`);
-      throw new Error(
-        `[comix] Failed to fetch after attempts:\n${attempts.join("\n")}`,
-      );
-    }
+    throw new Error(
+      `[comix] Failed to fetch after attempts:\n${attempts.join("\n")}`,
+    );
   }
 
   function extractChapterNumber(text) {
@@ -77,10 +73,29 @@
   async function getAvailableChapters(url) {
     console.groupCollapsed(`[comix] scraping: ${url}`);
     try {
-      const doc = await fetchHtml(url);
+      const html = await fetchHtml(url);
+
+      // Metodo 1: Cerca il latestChapter nel JSON della pagina (più affidabile per app SPA)
+      let match = html.match(/"latestChapter":\s*([0-9.]+)/);
+      if (match) {
+        const chapterNum = parseFloat(match[1]);
+        console.log(`[comix] found via JSON latestChapter: ${chapterNum}`);
+        return chapterNum;
+      }
+
+      // Metodo 2: Cerca nel latestChapterUrl del JSON
+      match = html.match(/"latestChapterUrl":"[^"]+chapter-([0-9.]+)/i);
+      if (match) {
+        const chapterNum = parseFloat(match[1]);
+        console.log(`[comix] found via JSON latestChapterUrl: ${chapterNum}`);
+        return chapterNum;
+      }
+
+      // Metodo 3: Fallback al DOM parsing (se la pagina è renderizzata)
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
       const chapters = [];
 
-      // Selettore specifico per comix basato sull'immagine fornita (es: <a class="mchap-row__primary">Ch.4.3</a>)
       const listItems = doc.querySelectorAll(
         ".mchap-list .mchap-item .mchap-row__primary",
       );
@@ -93,9 +108,12 @@
         }
       });
 
-      console.log(`[comix] found chapters: ${chapters.length}`, chapters);
+      console.log(
+        `[comix] found chapters in DOM: ${chapters.length}`,
+        chapters,
+      );
       if (chapters.length === 0) {
-        throw new Error("Nessun capitolo trovato");
+        throw new Error("Nessun capitolo trovato né nel JSON né nel DOM");
       }
       // Ordina decrescente e prendi il primo (il più recente)
       chapters.sort((a, b) => b - a);
