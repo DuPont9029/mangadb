@@ -3,6 +3,7 @@ class MangaUpdater {
   constructor() {
     this.updatesInProgress = false;
     this.mangaWithUpdates = new Set();
+    this.fallbackLinksToUse = new Map(); // Mappa: link originale -> link fallback vincente
     // Stato progress
     this.totalToProcess = 0;
     this.processedCount = 0;
@@ -46,6 +47,8 @@ class MangaUpdater {
 
       // Reset dei manga con aggiornamenti e progress UI
       this.mangaWithUpdates.clear();
+      // NOTA: Non pulisco this.fallbackLinksToUse.clear() qui, altrimenti perdo
+      // i vecchi fallback visualizzati se l'utente scansiona due volte
       this.totalToProcess = targetManga.length;
       this.processedCount = 0;
       this.initScanUI(this.totalToProcess);
@@ -81,6 +84,10 @@ class MangaUpdater {
 
       // Completa progress a fine scansione
       this.completeProgress();
+      // Aggiorna la UI per mostrare subito le modifiche (badge fallback, ecc.)
+      if (typeof window.filterAndDisplayManga === "function") {
+        window.filterAndDisplayManga();
+      }
     } catch (error) {
       console.error("Errore nel controllo aggiornamenti:", error);
       showError("Errore nel controllo aggiornamenti: " + error.message);
@@ -95,6 +102,7 @@ class MangaUpdater {
     let availableChapters = null;
     let lastError = null;
     let fallbackLogs = [];
+    let successfulFallbackUrl = null;
 
     try {
       const router = window.UpdateRouter;
@@ -153,6 +161,7 @@ class MangaUpdater {
               availableChapters =
                 await fbProvider.getAvailableChapters(fallbackUrl);
               lastError = null; // Successo! Resetta l'errore
+              successfulFallbackUrl = fallbackUrl; // Salva il link di fallback che ha funzionato
               fallbackLogs.push(
                 `Fallback successo via ${fbProvider.name} (${fallbackUrl}): trovati ${availableChapters} capitoli`,
               );
@@ -186,6 +195,9 @@ class MangaUpdater {
 
       if (availableChapters > readChapters) {
         this.mangaWithUpdates.add(manga.link);
+        if (successfulFallbackUrl) {
+          this.fallbackLinksToUse.set(manga.link, successfulFallbackUrl);
+        }
         console.log(
           `Nuovo capitolo per ${manga.nome}: ${availableChapters} disponibili, ${readChapters} letti`,
         );
@@ -194,13 +206,18 @@ class MangaUpdater {
           "success",
           `capitoli trovati: ${availableChapters} (Nuovi!)`,
           fallbackLogs,
+          successfulFallbackUrl,
         );
       } else {
+        if (successfulFallbackUrl) {
+          this.fallbackLinksToUse.set(manga.link, successfulFallbackUrl);
+        }
         this.appendScanLog(
           manga,
           "normal",
           `capitoli trovati: ${availableChapters}`,
           fallbackLogs,
+          successfulFallbackUrl,
         );
       }
     } catch (error) {
@@ -221,6 +238,11 @@ class MangaUpdater {
   // Controlla se un manga ha aggiornamenti
   hasUpdates(mangaLink) {
     return this.mangaWithUpdates.has(mangaLink);
+  }
+
+  // Restituisce il link di fallback vincente se presente
+  getSuccessfulFallbackLink(mangaLink) {
+    return this.fallbackLinksToUse.get(mangaLink);
   }
 
   // Utility per delay
@@ -270,14 +292,26 @@ class MangaUpdater {
   }
 
   // Aggiunge un log alla UI
-  appendScanLog(manga, type, message, fallbackLogs = []) {
+  appendScanLog(
+    manga,
+    type,
+    message,
+    fallbackLogs = [],
+    successfulFallbackUrl = null,
+  ) {
     const logsContainer = document.getElementById("scan-logs");
     if (!logsContainer) return;
 
     const logLine = document.createElement("div");
     logLine.className = "scan-log-line";
 
-    const safeLink = typeof manga.link === "string" ? manga.link : "";
+    // Se abbiamo un successfulFallbackUrl usa quello, altrimenti usa il link del manga originale
+    const safeLink =
+      typeof successfulFallbackUrl === "string"
+        ? successfulFallbackUrl
+        : typeof manga.link === "string"
+          ? manga.link
+          : "";
 
     const mainText = document.createElement("div");
 
@@ -342,6 +376,7 @@ class MangaUpdater {
 
 // Istanza globale del manga updater
 const mangaUpdater = new MangaUpdater();
+window.mangaUpdater = mangaUpdater; // <-- Aggiunto export globale esplicito
 
 // Funzione globale per controllare gli aggiornamenti (chiamata dal pulsante)
 async function checkMangaUpdates() {

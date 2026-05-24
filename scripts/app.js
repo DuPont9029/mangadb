@@ -126,6 +126,10 @@ async function loadManga() {
   }
 }
 
+// Esporta le funzioni necessarie per altri script (come updates.js)
+window.filterAndDisplayManga = filterAndDisplayManga;
+window.loadManga = loadManga;
+
 // Filtra e mostra i manga
 function filterAndDisplayManga() {
   let filteredManga = [...allManga];
@@ -219,12 +223,25 @@ function displayManga(manga) {
         statusClass = "completed";
       }
 
+      const fallbackLink = window.mangaUpdater
+        ? window.mangaUpdater.getSuccessfulFallbackLink(m.link)
+        : null;
+
+      // Se ha usato un fallback con successo e ci sono aggiornamenti, mostra il badge e usa quel link
+      const useFallback = fallbackLink && hasUpdates;
+      const displayLink = useFallback ? fallbackLink : m.link;
+
+      // Forza il rendering del badge per debug visivo se useFallback è true
+      const fallbackBadge = useFallback
+        ? '<span class="badge bg-warning ms-1" style="font-size: 0.6em; color: black !important;">Fallback</span>'
+        : "";
+
       return `
         <div class="manga-card">
             <div class="manga-status ${statusClass}" title="${status}"></div>
             <div class="manga-title">${safeName}</div>
-            <a href="${escapeHtml(m.link)}" target="_blank" class="manga-link">
-                <i class="fas fa-external-link-alt"></i> Vai al manga
+            <a href="${escapeHtml(displayLink)}" target="_blank" class="manga-link" title="${useFallback ? "Link di Fallback" : "Link Principale"}">
+                <i class="fas fa-external-link-alt"></i> Vai al manga ${fallbackBadge}
             </a>
             <div class="manga-date">
                 <i class="fas fa-book-reader"></i>
