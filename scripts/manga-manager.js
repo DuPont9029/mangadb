@@ -67,18 +67,18 @@ class MangaManager {
                     started BOOLEAN DEFAULT FALSE,
                     status VARCHAR DEFAULT 'unread',
                     chapter_read REAL DEFAULT 0.0,
-                    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    fallbacks VARCHAR DEFAULT '[]'
                 )
             `);
 
-      // Rimuovi questo blocco che causa l'errore:
-      // try {
-      //     await conn.query(`
-      //         ALTER TABLE manga ADD COLUMN chapter_read INTEGER DEFAULT 0
-      //     `);
-      // } catch (error) {
-      //     // La colonna esiste già, ignora l'errore
-      // }
+      try {
+        await conn.query(`
+            ALTER TABLE manga ADD COLUMN fallbacks VARCHAR DEFAULT '[]'
+        `);
+      } catch (error) {
+        // La colonna esiste già, ignora l'errore
+      }
     } finally {
       await conn.close();
     }
@@ -109,6 +109,9 @@ class MangaManager {
         const hasStatus = schema.some(
           (row) => row.column_name === "status" || row.name === "status",
         );
+        const hasFallbacks = schema.some(
+          (row) => row.column_name === "fallbacks" || row.name === "fallbacks",
+        );
 
         // Verifica se ci sono dati validi nel file
         const checkResult = await conn.query(`
@@ -126,16 +129,21 @@ class MangaManager {
             ? "COALESCE(status, CASE WHEN started = true THEN 'reading' ELSE 'unread' END) as status"
             : "CASE WHEN started = true THEN 'reading' ELSE 'unread' END as status";
 
+          const fallbacksSelect = hasFallbacks
+            ? "COALESCE(fallbacks, '[]') as fallbacks"
+            : "'[]' as fallbacks";
+
           // Inserisci i dati gestendo correttamente i NULL
           await conn.query(`
-                        INSERT INTO manga (nome, link, started, status, chapter_read, last_updated)
+                        INSERT INTO manga (nome, link, started, status, chapter_read, last_updated, fallbacks)
                         SELECT 
                             TRIM(nome) as nome,
                             TRIM(link) as link,
                             COALESCE(started, false) as started,
                             ${statusSelect},
                             COALESCE(chapter_read, 0.0) as chapter_read,
-                            COALESCE(last_updated, CURRENT_TIMESTAMP) as last_updated
+                            COALESCE(last_updated, CURRENT_TIMESTAMP) as last_updated,
+                            ${fallbacksSelect}
                         FROM read_parquet('${this.fileName}')
                         WHERE nome IS NOT NULL AND nome != '' AND TRIM(nome) != ''
                         AND link IS NOT NULL AND link != '' AND TRIM(link) != ''
@@ -212,6 +220,7 @@ class MangaManager {
           // Proveremo a leggere status se esiste, altrimenti deriviamo
 
           let hasStatus = false;
+          let hasFallbacks = false;
           try {
             const schemaCheck = await conn.query(
               `DESCRIBE SELECT * FROM read_parquet('${this.fileName}') LIMIT 1`,
@@ -219,6 +228,10 @@ class MangaManager {
             const schema = schemaCheck.toArray();
             hasStatus = schema.some(
               (row) => row.column_name === "status" || row.name === "status",
+            );
+            hasFallbacks = schema.some(
+              (row) =>
+                row.column_name === "fallbacks" || row.name === "fallbacks",
             );
           } catch (e) {
             console.log(
@@ -231,14 +244,19 @@ class MangaManager {
             ? "COALESCE(status, CASE WHEN started = true THEN 'reading' ELSE 'unread' END) as status"
             : "CASE WHEN started = true THEN 'reading' ELSE 'unread' END as status";
 
+          const fallbacksSelect = hasFallbacks
+            ? "COALESCE(fallbacks, '[]') as fallbacks"
+            : "'[]' as fallbacks";
+
           await conn.query(`
-                        INSERT INTO manga (nome, link, started, status, last_updated)
+                        INSERT INTO manga (nome, link, started, status, last_updated, fallbacks)
                         SELECT 
                             TRIM(nome) as nome,
                             TRIM(link) as link,
                             COALESCE(started, false) as started,
                             ${statusSelect},
-                            COALESCE(last_updated, CURRENT_TIMESTAMP) as last_updated
+                            COALESCE(last_updated, CURRENT_TIMESTAMP) as last_updated,
+                            ${fallbacksSelect}
                         FROM read_parquet('${this.fileName}')
                         WHERE nome IS NOT NULL AND nome != '' AND TRIM(nome) != ''
                         AND link IS NOT NULL AND link != '' AND TRIM(link) != ''
@@ -307,6 +325,7 @@ class MangaManager {
     started = false,
     chapterRead = 0,
     status = "unread",
+    fallbacks = "[]",
   ) {
     const conn = await this.db.connect();
     try {
@@ -317,10 +336,11 @@ class MangaManager {
       // Escape delle virgolette singole per sicurezza SQL
       const escapedNome = nome.replace(/'/g, "''");
       const escapedLink = link.replace(/'/g, "''");
+      const escapedFallbacks = fallbacks.replace(/'/g, "''");
 
       await conn.query(`
-                INSERT INTO manga (nome, link, started, status, chapter_read)
-                VALUES ('${escapedNome}', '${escapedLink}', ${started}, '${status}', ${chapterRead})
+                INSERT INTO manga (nome, link, started, status, chapter_read, fallbacks)
+                VALUES ('${escapedNome}', '${escapedLink}', ${started}, '${status}', ${chapterRead}, '${escapedFallbacks}')
             `);
 
       // Salva automaticamente su S3 dopo l'aggiunta
@@ -354,29 +374,33 @@ class MangaManager {
   async updateMangaStarted(link) {
     const conn = await this.db.connect();
     try {
-      // Escape delle virgolette singole per sicurezza SQL
       const escapedLink = link.replace(/'/g, "''");
+      const updateTime = new Date().toISOString();
 
-      // Prima ottieni lo stato attuale
-      const currentResult = await conn.query(`
-                SELECT started FROM manga WHERE link = '${escapedLink}'
-            `);
-
-      if (currentResult.toArray().length === 0) {
-        throw new Error("Manga non trovato");
-      }
-
-      const currentStarted = currentResult.toArray()[0].started;
-      const newStarted = !currentStarted; // Toggle dello stato
-      const newStatus = newStarted ? "reading" : "unread";
-
+      // Logica Inserisci Nuovo -> Elimina Vecchio anche qui
       await conn.query(`
-                UPDATE manga 
-                SET started = ${newStarted}, 
-                    status = '${newStatus}',
-                    last_updated = CURRENT_TIMESTAMP 
+                INSERT INTO manga (id, nome, link, started, status, chapter_read, last_updated, fallbacks)
+                SELECT 
+                    (SELECT COALESCE(MAX(id), 0) + 1 FROM manga),
+                    nome, 
+                    link, 
+                    NOT started, 
+                    CASE WHEN started THEN 'unread' ELSE 'reading' END,
+                    chapter_read,
+                    '${updateTime}',
+                    fallbacks
+                FROM manga 
                 WHERE link = '${escapedLink}'
             `);
+
+      await conn.query(`
+                DELETE FROM manga 
+                WHERE link = '${escapedLink}' 
+                AND id != (SELECT MAX(id) FROM manga WHERE link = '${escapedLink}')
+            `);
+
+      // Ricompatta gli ID
+      await this.recompactIds();
 
       // Salva automaticamente su S3
       await this.saveToS3();
@@ -398,12 +422,15 @@ class MangaManager {
     chapterRead = 0,
     lastUpdated = null,
     status = null,
+    fallbacks = "[]",
   ) {
     const conn = await this.db.connect();
     try {
       const updateTime = lastUpdated || new Date().toISOString();
       // Escape delle virgolette singole per sicurezza SQL
       const escapedNome = nome.replace(/'/g, "''");
+      const escapedLink = link.replace(/'/g, "''");
+      const escapedFallbacks = fallbacks.replace(/'/g, "''");
 
       // Logic to sync started and status
       if (status === null) {
@@ -414,18 +441,45 @@ class MangaManager {
         started = status === "reading";
       }
 
-      // Aggiorna tutti i campi incluso chapter_read
+      // Invece di usare UPDATE che può causare constraint errors in DuckDB,
+      // usiamo la logica di Copia Dati -> Elimina Vecchio -> Inserisci Nuovo per evitare
+      // di violare il constraint UNIQUE sul campo 'link' durante la sovrapposizione.
+
+      // 1. Leggi i vecchi dati che non sono stati forniti nell'update
+      const oldRecordQuery = await conn.query(
+        `SELECT started, status, chapter_read, last_updated, fallbacks FROM manga WHERE id = ${id}`,
+      );
+      const oldRecord = oldRecordQuery.toArray()[0];
+
+      if (!oldRecord) {
+        throw new Error("Record originale non trovato");
+      }
+
+      // 2. Elimina il record originale PRIMA di inserire quello nuovo
       await conn.query(`
-                UPDATE manga 
-                SET nome = '${escapedNome}', 
-                    started = ${started}, 
-                    status = '${status}',
-                    chapter_read = ${chapterRead},
-                    last_updated = '${updateTime}'
+                DELETE FROM manga 
                 WHERE id = ${id}
             `);
 
-      // Salva automaticamente su S3 dopo l'aggiornamento
+      // 3. Inserisci il nuovo record con il nuovo id e i nuovi dati (o vecchi se non modificati)
+      await conn.query(`
+                INSERT INTO manga (id, nome, link, started, status, chapter_read, last_updated, fallbacks)
+                VALUES (
+                    (SELECT COALESCE(MAX(id), 0) + 1 FROM manga), 
+                    '${escapedNome}', 
+                    '${escapedLink}',
+                    ${started}, 
+                    '${status}',
+                    ${chapterRead},
+                    '${updateTime}',
+                    '${escapedFallbacks}'
+                )
+            `);
+
+      // Ricompatta gli ID in modo pulito
+      await this.recompactIds();
+
+      // Salva le modifiche su S3
       await this.saveToS3();
 
       return true;
@@ -522,7 +576,7 @@ class MangaManager {
                 CREATE TEMPORARY TABLE manga_temp AS 
                 SELECT 
                     ROW_NUMBER() OVER (ORDER BY id) as new_id,
-                    nome, link, started, status, chapter_read, last_updated
+                    nome, link, started, status, chapter_read, last_updated, fallbacks
                 FROM manga
                 ORDER BY id
             `);
@@ -532,8 +586,8 @@ class MangaManager {
 
       // Reinserisci i dati con ID ricompattati
       await conn.query(`
-                INSERT INTO manga (id, nome, link, started, status, chapter_read, last_updated)
-                SELECT new_id, nome, link, started, status, chapter_read, last_updated
+                INSERT INTO manga (id, nome, link, started, status, chapter_read, last_updated, fallbacks)
+                SELECT new_id, nome, link, started, status, chapter_read, last_updated, fallbacks
                 FROM manga_temp
             `);
 

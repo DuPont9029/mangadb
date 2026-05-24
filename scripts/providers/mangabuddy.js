@@ -1,4 +1,4 @@
-(function() {
+(function () {
   // Scraping MangaBuddy
   async function fetchHtml(mangaUrl) {
     const response = await fetch(mangaUrl);
@@ -7,19 +7,19 @@
     }
     const html = await response.text();
     const parser = new DOMParser();
-    return parser.parseFromString(html, 'text/html');
+    return parser.parseFromString(html, "text/html");
   }
 
   async function primaryGetAvailable(mangaUrl) {
     const doc = await fetchHtml(mangaUrl);
-    const latestChaptersElement = doc.querySelector('.latest-chapters');
+    const latestChaptersElement = doc.querySelector(".latest-chapters");
     if (!latestChaptersElement) {
-      throw new Error('Elemento latest-chapters non trovato');
+      throw new Error("Elemento latest-chapters non trovato");
     }
     const chapterText = latestChaptersElement.textContent;
     const chapterMatch = chapterText.match(/Chapter\s+(\d+(?:\.\d+)?)/i);
     if (!chapterMatch) {
-      throw new Error('Numero capitolo non trovato nel testo: ' + chapterText);
+      throw new Error("Numero capitolo non trovato nel testo: " + chapterText);
     }
     return parseFloat(chapterMatch[1]);
   }
@@ -27,21 +27,23 @@
   async function alternativeGetAvailable(mangaUrl) {
     const doc = await fetchHtml(mangaUrl);
     const selectors = [
-      '.latest-chapters',
-      '.chapter-list .chapter-item:first-child',
-      '.manga-chapters .chapter:first-child',
-      '[class*="chapter"]:first-child'
+      ".latest-chapters",
+      ".chapter-list .chapter-item:first-child",
+      ".manga-chapters .chapter:first-child",
+      '[class*="chapter"]:first-child',
     ];
     for (const selector of selectors) {
       const element = doc.querySelector(selector);
       if (element) {
-        const chapterMatch = element.textContent.match(/Chapter\s+(\d+(?:\.\d+)?)/i);
+        const chapterMatch = element.textContent.match(
+          /Chapter\s+(\d+(?:\.\d+)?)/i,
+        );
         if (chapterMatch) {
           return parseFloat(chapterMatch[1]);
         }
       }
     }
-    throw new Error('Numero capitolo non trovato con nessun metodo');
+    throw new Error("Numero capitolo non trovato con nessun metodo");
   }
 
   async function getAvailableChapters(url) {
@@ -54,8 +56,8 @@
   }
 
   const provider = {
-    name: 'mangabuddy',
-    match: (url, host) => (host || '').includes('mangabuddy.com'),
+    name: "mangabuddy",
+    match: (url, host) => (host || "").includes("mangabuddy.com"),
     getAvailableChapters: async (url) => await getAvailableChapters(url),
   };
 
