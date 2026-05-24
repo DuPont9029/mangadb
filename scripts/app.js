@@ -113,6 +113,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (error) {
     showError("Errore nell'inizializzazione: " + error.message);
   }
+
+  // Inizializza stato dello switch fallback
+  const forceFallbackSwitch = document.getElementById("force-fallback-switch");
+  if (forceFallbackSwitch) {
+    forceFallbackSwitch.checked =
+      localStorage.getItem("forceFallbackOnly") === "true";
+    forceFallbackSwitch.addEventListener("change", (e) => {
+      localStorage.setItem("forceFallbackOnly", e.target.checked);
+    });
+  }
 });
 
 // Carica tutti i manga

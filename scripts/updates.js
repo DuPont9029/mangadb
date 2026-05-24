@@ -121,6 +121,19 @@ class MangaUpdater {
       }
 
       try {
+        const forceFallbackSwitch = document.getElementById(
+          "force-fallback-switch",
+        );
+        const forceFallback = forceFallbackSwitch
+          ? forceFallbackSwitch.checked
+          : false;
+
+        if (forceFallback) {
+          throw new Error(
+            "Scansione main link disabilitata (Forzato fallback)",
+          );
+        }
+
         availableChapters = await provider.getAvailableChapters(manga.link);
       } catch (e) {
         lastError = e;
