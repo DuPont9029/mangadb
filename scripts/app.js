@@ -360,7 +360,33 @@ function editManga(id) {
   document.getElementById("manga-chapters").value =
     Math.round((manga.chapter_read || 0) * 10) / 10;
 
-  new bootstrap.Modal(document.getElementById("mangaModal")).show();
+  // Fallbacks
+  let fallbacksStr = "";
+  if (manga.fallbacks) {
+    try {
+      // Potrebbe già essere un array oppure una stringa JSON
+      const parsed =
+        typeof manga.fallbacks === "string"
+          ? JSON.parse(manga.fallbacks)
+          : manga.fallbacks;
+      if (Array.isArray(parsed)) {
+        fallbacksStr = parsed.join("\n");
+      }
+    } catch (e) {
+      console.warn("Impossibile parsare fallbacks per l'editing", e);
+    }
+  }
+  const fallbacksInput = document.getElementById("manga-fallbacks");
+  if (fallbacksInput) {
+    fallbacksInput.value = fallbacksStr;
+  }
+
+  const modalEl = document.getElementById("mangaModal");
+  if (modalEl) {
+    new bootstrap.Modal(modalEl).show();
+  } else {
+    console.error("Modale mangaModal non trovato nel DOM");
+  }
 }
 
 // Salva manga (aggiungi o modifica)
@@ -372,6 +398,18 @@ async function saveManga() {
   const started = status === "reading";
   const chapterRead =
     parseFloat(document.getElementById("manga-chapters").value) || 0.0;
+
+  // Parse fallbacks safely
+  let fallbacksJson = "[]";
+  const fallbacksInput = document.getElementById("manga-fallbacks");
+  if (fallbacksInput) {
+    const fallbacksText = fallbacksInput.value;
+    const fallbacksArray = fallbacksText
+      .split("\n")
+      .map((url) => url.trim())
+      .filter((url) => url.length > 0);
+    fallbacksJson = JSON.stringify(fallbacksArray);
+  }
 
   if (!nome || !link) {
     showError("Nome e link sono obbligatori");
@@ -389,11 +427,19 @@ async function saveManga() {
         chapterRead,
         null,
         status,
+        fallbacksJson,
       );
       showMessage("Manga aggiornato con successo!");
     } else {
       // Aggiungi
-      await mangaManager.addManga(nome, link, started, chapterRead, status);
+      await mangaManager.addManga(
+        nome,
+        link,
+        started,
+        chapterRead,
+        status,
+        fallbacksJson,
+      );
       showMessage("Manga aggiunto con successo!");
     }
 
@@ -412,7 +458,16 @@ function showAddModal() {
   document.getElementById("manga-id").value = "";
   document.getElementById("manga-chapters").value = "0.0"; // Default a 0.0
   document.getElementById("manga-status").value = "unread";
-  new bootstrap.Modal(document.getElementById("mangaModal")).show();
+
+  const fallbacksInput = document.getElementById("manga-fallbacks");
+  if (fallbacksInput) {
+    fallbacksInput.value = "";
+  }
+
+  const modalEl = document.getElementById("mangaModal");
+  if (modalEl) {
+    new bootstrap.Modal(modalEl).show();
+  }
 }
 
 // Cambia stato di lettura

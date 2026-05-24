@@ -1,8 +1,4 @@
-
-
-
-          
-#  MangaDB 
+# 🚀 MangaDB ✨
 
 <div align="center">
 
@@ -26,21 +22,25 @@
 ###  Caratteristiche Spaziali
 
 🔥 **Database In-Memory Ultra Veloce**
+
 - Powered by DuckDB WASM
 - Query SQL lightning-fast
 - Zero configurazione server
 
 ☁️ **Backup Cloud Automatico**
+
 - Sincronizzazione con AWS S3
 - Backup incrementali
 - Accesso da qualsiasi dispositivo
 
 🎨 **UI Moderna e Responsive**
+
 - Design glassmorphism
 - Animazioni fluide
 - Mobile-first approach
 
 🔒 **Sicurezza Enterprise**
+
 - Autenticazione AWS IAM
 - Policy granulari per bucket
 - Crittografia end-to-end
@@ -49,12 +49,14 @@
 
 <div align="center">
 
-| Logo | Sito | Descrizione |
-|:---:|:---|:---|
-| <img src="https://www.google.com/s2/favicons?domain=mangabuddy.com&sz=64" width="32"> | **MangaBuddy** | Ampia collezione di manga e manhua |
-| <img src="https://www.google.com/s2/favicons?domain=manhwabuddy.com&sz=64" width="32"> | **ManhwaBuddy** | Specializzato in manhwa e webtoon coreani |
-| <img src="https://www.google.com/s2/favicons?domain=ravenscans.com&sz=64" width="32"> | **RavenScans** | Scanlation group con titoli esclusivi |
-| <img src="https://www.google.com/s2/favicons?domain=mangafire.to&sz=64" width="32"> | **MangaFire** | Interfaccia moderna e aggiornamenti rapidi |
+|                                          Logo                                          | Sito            | Descrizione                                  |
+| :------------------------------------------------------------------------------------: | :-------------- | :------------------------------------------- |
+| <img src="https://www.google.com/s2/favicons?domain=mangabuddy.com&sz=64" width="32">  | **MangaBuddy**  | Ampia collezione di manga e manhua           |
+| <img src="https://www.google.com/s2/favicons?domain=manhwabuddy.com&sz=64" width="32"> | **ManhwaBuddy** | Specializzato in manhwa e webtoon coreani    |
+| <img src="https://www.google.com/s2/favicons?domain=ravenscans.com&sz=64" width="32">  | **RavenScans**  | Scanlation group con titoli esclusivi        |
+|  <img src="https://www.google.com/s2/favicons?domain=mangafire.to&sz=64" width="32">   | **MangaFire**   | Interfaccia moderna e aggiornamenti rapidi   |
+|    <img src="https://www.google.com/s2/favicons?domain=comix.to&sz=64" width="32">     | **Comix**       | Applicazione moderna e pulita per la lettura |
+|    <img src="https://www.google.com/s2/favicons?domain=mangak.io&sz=64" width="32">    | **MangaK**      | Veloce e affidabile con vasto catalogo       |
 
 </div>
 
@@ -71,24 +73,27 @@
 ### ⚡ Installazione Istantanea
 
 1. **Clone del repository**
+
    ```bash
    git clone https://github.com/tuousername/mangadb.git
    cd mangadb
    ```
 
 2. **Avvia il server locale**
+
    ```bash
    # Con Python
    python -m http.server 8000
-   
+
    # Con Node.js
    npx serve .
-   
+
    # Con PHP
    php -S localhost:8000
    ```
 
 3. **Apri nel browser**
+
    ```
    http://localhost:8000
    ```
@@ -114,9 +119,9 @@ flowchart TB
     E --> D["☁️ AWS S3"]
     F["🔄 Backup System"] --> D
     n1["providers"] -- nuovi capitoli --> B
-    n1 --> n2["mangabuddy"] & n3["manhwabuddy"] & n4["ravenscans"] & n5["mangafire"]
-    B -- ricerca diretta --> n2
+    n1 --> n2["mangabuddy"] & n3["manhwabuddy"] & n4["ravenscans"] & n5["mangafire"] & n7["comix"]
     n6 --> n1
+    n2 -. "auto-fallback" .-> n8["mangaK"]
 
     n6@{ shape: rect}
     n1@{ shape: rect}
@@ -124,6 +129,8 @@ flowchart TB
     n3@{ shape: rect}
     n4@{ shape: rect}
     n5@{ shape: rect}
+    n7@{ shape: rect}
+    n8@{ shape: rect}
     style A fill:#e1f5fe
     style B fill:#f3e5f5
     style n6 fill:#FFF9C4
@@ -133,24 +140,27 @@ flowchart TB
     style n3 fill:#E1BEE7
     style n4 fill:#FFCDD2
     style n5 fill:#BBDEFB
+    style n7 fill:#FFE0B2
+    style n8 fill:#e1f5fe
 ```
 
 ### 🧩 Stack Tecnologico
 
-| Componente | Tecnologia | Descrizione |
-|------------|------------|-------------|
-| 🎨 **Frontend** | HTML5 + CSS3 + JavaScript ES6+ | UI moderna e responsive |
-| 🗄️ **Database** | DuckDB WASM | Database analitico in-memory |
-| ☁️ **Storage** | AWS S3 | Backup e sincronizzazione cloud |
-| 📊 **Formato Dati** | Apache Parquet | Compressione ottimale |
-| 🎭 **UI Framework** | Bootstrap 5.3 | Design system moderno |
-| 🔧 **Build Tools** | Vanilla JS | Zero dependencies |
+| Componente          | Tecnologia                     | Descrizione                     |
+| ------------------- | ------------------------------ | ------------------------------- |
+| 🎨 **Frontend**     | HTML5 + CSS3 + JavaScript ES6+ | UI moderna e responsive         |
+| 🗄️ **Database**     | DuckDB WASM                    | Database analitico in-memory    |
+| ☁️ **Storage**      | AWS S3                         | Backup e sincronizzazione cloud |
+| 📊 **Formato Dati** | Apache Parquet                 | Compressione ottimale           |
+| 🎭 **UI Framework** | Bootstrap 5.3                  | Design system moderno           |
+| 🔧 **Build Tools**  | Vanilla JS                     | Zero dependencies               |
 
 ---
 
 ## 🎮 Funzionalità Principali
 
 ### 📚 Gestione Manga
+
 - ➕ **Aggiungi manga** con nome e link
 - ✏️ **Modifica** informazioni esistenti
 - 🗑️ **Elimina** manga dalla collezione
@@ -158,17 +168,20 @@ flowchart TB
 - 📊 **Statistiche** dettagliate
 
 ### 🏷️ Sistema di Stato
+
 - 📖 **Letti** - Manga completati
 - ⏰ **Non Letti** - Da leggere
 - 🔄 **Toggle rapido** dello stato
 
 ### ☁️ Backup e Sincronizzazione
+
 - 💾 **Salvataggio automatico** su S3
 - 🔄 **Backup manuale** con nome personalizzato
 - 📥 **Caricamento** da backup esistenti
 - 🗜️ **Ricompattazione** database
 
 ### 🎨 Interfaccia Utente
+
 - 🌙 **Design glassmorphism** moderno
 - 📱 **Responsive** su tutti i dispositivi
 - ⚡ **Animazioni** fluide
@@ -186,39 +199,23 @@ flowchart TB
   "statement": [
     {
       "effect": "allow",
-      "action": [
-        "s3:DeleteObject"
-      ],
-      "resource": [
-        "crn:object:objectname/*"
-      ]
+      "action": ["s3:DeleteObject"],
+      "resource": ["crn:object:objectname/*"]
     },
     {
       "effect": "allow",
-      "action": [
-        "s3:GetObject"
-      ],
-      "resource": [
-        "crn:object:objectname/*"
-      ]
+      "action": ["s3:GetObject"],
+      "resource": ["crn:object:objectname/*"]
     },
     {
       "effect": "allow",
-      "action": [
-        "s3:PutObject"
-      ],
-      "resource": [
-        "crn:object:objectname/*"
-      ]
+      "action": ["s3:PutObject"],
+      "resource": ["crn:object:objectname/*"]
     },
     {
       "effect": "allow",
-      "action": [
-        "s3:ListBucket"
-      ],
-      "resource": [
-        "crn:object:objectname"
-      ]
+      "action": ["s3:ListBucket"],
+      "resource": ["crn:object:objectname"]
     }
   ]
 }
@@ -260,13 +257,14 @@ flowchart TB
 ## 🎯 Roadmap Futura
 
 ### 🚀 Versione 2.0
-- [X] 🔎 **Cerca updates** avanzato
-- [X] 📱 **PWA support** per mobile
+
+- [x] 🔎 **Cerca updates** avanzato
+- [x] 📱 **PWA support** per mobile
 - [ ] 🏷️ **Tag personalizzati** per manga
 - [ ] 🌙 **Dark mode** nativo
 
-
 ### 🌟 Versione 3.0
+
 - [ ] 👥 **Condivisione collezioni**
 - [ ] 🤖 **AI recommendations**
 - [ ] 📚 **Accesso con google**
@@ -314,5 +312,4 @@ Usa il [sistema di issue](https://github.com/DuPont9029/mangadb/issues) per segn
 
 ---
 
-*🚀 Porta la tua collezione manga nello spazio con MangaDB!! 🌌*
-        
+_🚀 Porta la tua collezione manga nello spazio con MangaDB!! 🌌_

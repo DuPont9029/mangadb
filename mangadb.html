@@ -889,13 +889,29 @@
                 ></div>
               </div>
               <div class="mb-3">
-                <label for="manga-link" class="form-label">Link</label>
+                <label for="manga-link" class="form-label"
+                  >Link Principale</label
+                >
                 <input
                   type="url"
                   class="form-control form-control-modern"
                   id="manga-link"
                   required
                 />
+              </div>
+              <div class="mb-3">
+                <label for="manga-fallbacks" class="form-label"
+                  >Link di Fallback (Opzionali, uno per riga)</label
+                >
+                <textarea
+                  class="form-control form-control-modern"
+                  id="manga-fallbacks"
+                  rows="2"
+                  placeholder="https://provider1...&#10;https://provider2..."
+                ></textarea>
+                <div class="form-text small">
+                  Usati automaticamente se il link principale fallisce.
+                </div>
               </div>
               <div class="mb-3">
                 <label for="manga-chapters" class="form-label"
@@ -1157,6 +1173,8 @@
     <script src="./scripts/providers/ravenscans.js"></script>
     <script src="./scripts/providers/mangafire.js"></script>
     <script src="./scripts/providers/comix.js"></script>
+    <script src="./scripts/providers/mangak.js"></script>
+    <!-- Aggiunto mangak.js qui -->
     <script src="./scripts/updates.js?v=backupfix2"></script>
     <script src="./scripts/app.js?v=backupfix2"></script>
   </body>
